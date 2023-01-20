@@ -1,4 +1,4 @@
-package com.svhelloworld.postgrescdc;
+package com.svhelloworld.cdc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
