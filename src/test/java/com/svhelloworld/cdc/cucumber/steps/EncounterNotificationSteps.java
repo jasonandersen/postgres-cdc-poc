@@ -1,7 +1,8 @@
 package com.svhelloworld.cdc.cucumber.steps;
 
+import com.svhelloworld.cdc.DiagnosisCode;
 import com.svhelloworld.cdc.Encounter;
-import com.svhelloworld.cdc.EncounterDao;
+import com.svhelloworld.cdc.EncounterService;
 import com.svhelloworld.cdc.ProcedureCode;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -20,12 +21,12 @@ public class EncounterNotificationSteps {
     
     private static final Logger log = LoggerFactory.getLogger(EncounterNotificationSteps.class);
     
-    private final EncounterDao dao;
+    private final EncounterService encounterService;
     private Encounter targetEncounter;
     
-    public EncounterNotificationSteps(EncounterDao dao) {
+    public EncounterNotificationSteps(EncounterService encounterService) {
+        this.encounterService = encounterService;
         log.info("Change data capture step definitions instantiated.");
-        this.dao = dao;
     }
     
     @Given("this new encounter that has not been saved")
@@ -38,15 +39,18 @@ public class EncounterNotificationSteps {
         cptCodes.forEach(c -> targetEncounter.addProcedure(c));
     }
     
+    @Given("the encounter has these ICD codes:")
+    public void theEncounterHasTheseICDCodes(List<DiagnosisCode> icdCodes) {
+        icdCodes.forEach(c -> targetEncounter.addDiagnosis(c));
+    }
+    
     @When("the encounter is saved")
     public void theEncounterIsSaved() {
-        targetEncounter = dao.save(targetEncounter);
+        targetEncounter = encounterService.saveEncounter(targetEncounter);
     }
     
     @Then("I am notified that a new encounter has been created")
     public void theEncounterIsRecordedInTheOutbox() {
         fail();
     }
-    
-
 }

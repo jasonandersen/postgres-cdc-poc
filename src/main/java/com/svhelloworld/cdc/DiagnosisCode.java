@@ -9,6 +9,13 @@ import jakarta.persistence.Table;
 @Table(name = "icd_codes")
 public class DiagnosisCode {
     
+    public static DiagnosisCode from(String icdCode, String description) {
+        DiagnosisCode out = new DiagnosisCode();
+        out.setIcdCode(icdCode);
+        out.setDescription(description);
+        return out;
+    }
+    
     @Id
     @Column(name = "icd_code")
     private String icdCode;

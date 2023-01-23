@@ -8,6 +8,9 @@ Feature: When an encounter is created or modified in any we, we are notified of 
       | 86931 |
       | 86960 |
       | 86985 |
+    And the encounter has these ICD codes:
+      | A36.3 |
+      | A36.1 |
 
   Scenario: Create a new encounter
     When the encounter is saved

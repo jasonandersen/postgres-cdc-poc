@@ -47,6 +47,13 @@ public class Encounter {
             inverseJoinColumns = @JoinColumn(name = "cpt_code"))
     private Set<ProcedureCode> procedureCodes;
     
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "encounter_dx",
+            joinColumns = @JoinColumn(name = "encounter_id"),
+            inverseJoinColumns = @JoinColumn(name = "icd_code"))
+    private Set<DiagnosisCode> diagnosisCodes;
+    
     @Column(name = "created_on")
     private Instant createdOn = Instant.now();
     
@@ -93,6 +100,14 @@ public class Encounter {
         this.procedureCodes = procedureCodes;
     }
     
+    public Set<DiagnosisCode> getDiagnosisCodes() {
+        return diagnosisCodes;
+    }
+    
+    public void setDiagnosisCodes(Set<DiagnosisCode> diagnosisCodes) {
+        this.diagnosisCodes = diagnosisCodes;
+    }
+    
     public Instant getCreatedOn() {
         return createdOn;
     }
@@ -114,6 +129,13 @@ public class Encounter {
             procedureCodes = new HashSet<>();
         }
         procedureCodes.add(procedure);
+    }
+    
+    public void addDiagnosis(DiagnosisCode diagnosis) {
+        if (diagnosisCodes == null) {
+            diagnosisCodes = new HashSet<>();
+        }
+        diagnosisCodes.add(diagnosis);
     }
     
     @Override

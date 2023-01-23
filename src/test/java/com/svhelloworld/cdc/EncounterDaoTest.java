@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,12 +40,15 @@ public class EncounterDaoTest {
     
     @Test
     void saveWithProcedureCodes() {
+        // new encounter
         Encounter newEncounter = buildEncounter();
         newEncounter.addProcedure(ProcedureCode.from("86930", "Frozen blood prep"));
-        
+        // save encounter
         Encounter savedEncounter = encounterDao.save(newEncounter);
+        // re-load encounter from database
         Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
         if (result.isPresent()) {
+            // assert results
             Encounter retrievedEncounter = result.get();
             assertEquals(1, retrievedEncounter.getProcedureCodes().size());
             ProcedureCode procedureCode = retrievedEncounter.getProcedureCodes().iterator().next();
@@ -55,11 +59,28 @@ public class EncounterDaoTest {
         }
     }
     
+    @Test
+    void saveWithDiagnosisCodes() {
+        Encounter newEncounter = buildEncounter();
+        newEncounter.addDiagnosis(DiagnosisCode.from("A36.3", "Cutaneous diphtheria"));
+        Encounter savedEncounter = encounterDao.save(newEncounter);
+        Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
+        if (result.isPresent()) {
+            Encounter retrievedEncounter = result.get();
+            assertEquals(1, retrievedEncounter.getDiagnosisCodes().size());
+            DiagnosisCode diagnosisCode = retrievedEncounter.getDiagnosisCodes().iterator().next();
+            assertEquals("A36.3", diagnosisCode.getIcdCode());
+            assertEquals("Cutaneous diphtheria", diagnosisCode.getDescription());
+        } else {
+            fail("Encounter was not found in the database");
+        }
+    }
+    
     private Encounter buildEncounter() {
         Encounter encounter = new Encounter();
         encounter.setNotes("I like monkeys!");
         encounter.setStatusId(100);
-        encounter.setPatientId("2050246a-98e2-11ed-a8fc-0242ac120002");
+        encounter.setPatientId(UUID.randomUUID().toString());
         return encounter;
     }
 }
