@@ -34,9 +34,9 @@ public class InputTransformer {
      */
     private static final Pattern percentagePattern = Pattern.compile("^[\\d.]+%$");
     /**
-     * Regular expression pattern that will determine if a value is numeric with thousands seperators.
+     * Regular expression pattern that will determine if a value is numeric with thousands separators.
      */
-    private static final Pattern thousandsSeperatorPattern = Pattern.compile("^[\\d,.]+$");
+    private static final Pattern thousandsSeparatorPattern = Pattern.compile("^[\\d,.]+$");
 
     /**
      * Transforms a {@link Map} of string keys and values into a bean.
@@ -114,7 +114,7 @@ public class InputTransformer {
      * @return true if the value is a numeric with thousands seperators
      */
     private boolean isNumericWithThousandsSeperators(String value) {
-        return thousandsSeperatorPattern.matcher(value).matches();
+        return thousandsSeparatorPattern.matcher(value).matches();
     }
 
     /**

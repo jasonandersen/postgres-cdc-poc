@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc.cucumber;
+package com.svhelloworld.cdc.cucumber.steps;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.jupiter.api.extension.ExtendWith;

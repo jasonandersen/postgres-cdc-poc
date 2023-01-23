@@ -1,39 +1,41 @@
-package com.svhelloworld.cdc.cucumber;
+package com.svhelloworld.cdc.cucumber.steps;
 
 import com.svhelloworld.cdc.Encounter;
 import com.svhelloworld.cdc.EncounterDao;
-import com.svhelloworld.cdc.cucumber.types.InputTransformer;
-import io.cucumber.java.DataTableType;
+import com.svhelloworld.cdc.ProcedureCode;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Glue code to execute steps defined in the Cucumber step definition files.
  */
-public class ChangeDataCaptureSteps {
+public class EncounterNotificationSteps {
     
-    private static final Logger log = LoggerFactory.getLogger(ChangeDataCaptureSteps.class);
+    private static final Logger log = LoggerFactory.getLogger(EncounterNotificationSteps.class);
     
     private final EncounterDao dao;
-    private final InputTransformer inputTransformer;
     private Encounter targetEncounter;
     
-    public ChangeDataCaptureSteps(EncounterDao dao, InputTransformer inputTransformer) {
+    public EncounterNotificationSteps(EncounterDao dao) {
         log.info("Change data capture step definitions instantiated.");
         this.dao = dao;
-        this.inputTransformer = inputTransformer;
     }
     
-    @Given("a new encounter:")
+    @Given("this new encounter that has not been saved")
     public void aNewEncounter(Encounter encounter) {
         targetEncounter = encounter;
+    }
+    
+    @Given("the encounter has these CPT codes")
+    public void theEncounterHasTheseCPTCodes(List<ProcedureCode> cptCodes) {
+        cptCodes.forEach(c -> targetEncounter.addProcedure(c));
     }
     
     @When("the encounter is saved")
@@ -41,16 +43,10 @@ public class ChangeDataCaptureSteps {
         targetEncounter = dao.save(targetEncounter);
     }
     
-    @Then("the encounter is recorded in the outbox")
+    @Then("I am notified that a new encounter has been created")
     public void theEncounterIsRecordedInTheOutbox() {
         fail();
     }
     
-    /**
-     * Convert Cucumber tables in feature files to {@link Encounter} objects.
-     */
-    @DataTableType
-    public Encounter encounter(Map<String, String> input) {
-        return inputTransformer.transformToBean(input, Encounter.class);
-    }
+
 }

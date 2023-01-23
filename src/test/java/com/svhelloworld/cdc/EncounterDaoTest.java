@@ -6,9 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Validating that {@link Encounter} entities are persisted correctly.
+ */
 @SpringBootTest
 public class EncounterDaoTest {
     private static final Logger log = LoggerFactory.getLogger(EncounterDaoTest.class);
@@ -22,21 +26,40 @@ public class EncounterDaoTest {
     }
     
     @Test
-    void save() {
+    void saveWithNoProcedureOrDxCodes() {
         long originalCount = encounterDao.count();
         log.info("{} rows in encounter table", originalCount);
         
-        encounterDao.save(encounter());
+        encounterDao.save(buildEncounter());
         
         long newCount = encounterDao.count();
         log.info("{} rows in encounter table after save", newCount);
         assertEquals(originalCount + 1, newCount);
     }
     
-    private Encounter encounter() {
+    @Test
+    void saveWithProcedureCodes() {
+        Encounter newEncounter = buildEncounter();
+        newEncounter.addProcedure(ProcedureCode.from("86930", "Frozen blood prep"));
+        
+        Encounter savedEncounter = encounterDao.save(newEncounter);
+        Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
+        if (result.isPresent()) {
+            Encounter retrievedEncounter = result.get();
+            assertEquals(1, retrievedEncounter.getProcedureCodes().size());
+            ProcedureCode procedureCode = retrievedEncounter.getProcedureCodes().iterator().next();
+            assertEquals("86930", procedureCode.getCptCode());
+            assertEquals("Frozen blood prep", procedureCode.getDescription());
+        } else {
+            fail("Encounter was not found in the database.");
+        }
+    }
+    
+    private Encounter buildEncounter() {
         Encounter encounter = new Encounter();
         encounter.setNotes("I like monkeys!");
         encounter.setStatusId(100);
+        encounter.setPatientId("2050246a-98e2-11ed-a8fc-0242ac120002");
         return encounter;
     }
 }

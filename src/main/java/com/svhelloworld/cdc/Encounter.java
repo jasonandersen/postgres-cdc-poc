@@ -2,13 +2,19 @@ package com.svhelloworld.cdc;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="encounters")
@@ -25,11 +31,21 @@ public class Encounter {
     @Column(name = "encounter_id")
     private long id;
     
+    @Column(name = "patient_id")
+    private String patientId;
+    
     @Column(name = "encounter_status_id")
     private int statusId;
     
     @Column(name = "notes")
     private String notes;
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "encounter_procedures",
+            joinColumns = @JoinColumn(name = "encounter_id"),
+            inverseJoinColumns = @JoinColumn(name = "cpt_code"))
+    private Set<ProcedureCode> procedureCodes;
     
     @Column(name = "created_on")
     private Instant createdOn = Instant.now();
@@ -43,6 +59,14 @@ public class Encounter {
     
     public void setId(long id) {
         this.id = id;
+    }
+    
+    public String getPatientId() {
+        return patientId;
+    }
+    
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
     
     public int getStatusId() {
@@ -61,6 +85,14 @@ public class Encounter {
         this.notes = notes;
     }
     
+    public Set<ProcedureCode> getProcedureCodes() {
+        return procedureCodes;
+    }
+    
+    public void setProcedureCodes(Set<ProcedureCode> procedureCodes) {
+        this.procedureCodes = procedureCodes;
+    }
+    
     public Instant getCreatedOn() {
         return createdOn;
     }
@@ -75,5 +107,25 @@ public class Encounter {
     
     public void setUpdatedOn(Instant updatedOn) {
         this.updatedOn = updatedOn;
+    }
+    
+    public void addProcedure(ProcedureCode procedure) {
+        if (procedureCodes == null) {
+            procedureCodes = new HashSet<>();
+        }
+        procedureCodes.add(procedure);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Encounter)) return false;
+        Encounter encounter = (Encounter) o;
+        return getId() == encounter.getId();
+    }
+    
+    @Override
+    public int hashCode() {
+        return (int) (getId() ^ (getId() >>> 32));
     }
 }
