@@ -1,5 +1,9 @@
-package com.svhelloworld.cdc.encounters;
+package com.svhelloworld.cdc.encounters.dao;
 
+import com.svhelloworld.cdc.encounters.model.DiagnosisCode;
+import com.svhelloworld.cdc.encounters.model.Encounter;
+import com.svhelloworld.cdc.encounters.model.EncounterStatus;
+import com.svhelloworld.cdc.encounters.model.ProcedureCode;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

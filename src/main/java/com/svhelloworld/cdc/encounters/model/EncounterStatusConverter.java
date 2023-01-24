@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc.encounters;
+package com.svhelloworld.cdc.encounters.model;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

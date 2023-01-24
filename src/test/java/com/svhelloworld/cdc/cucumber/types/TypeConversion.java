@@ -1,8 +1,8 @@
 package com.svhelloworld.cdc.cucumber.types;
 
-import com.svhelloworld.cdc.encounters.DiagnosisCode;
-import com.svhelloworld.cdc.encounters.Encounter;
-import com.svhelloworld.cdc.encounters.ProcedureCode;
+import com.svhelloworld.cdc.encounters.model.DiagnosisCode;
+import com.svhelloworld.cdc.encounters.model.Encounter;
+import com.svhelloworld.cdc.encounters.model.ProcedureCode;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.DefaultDataTableCellTransformer;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc.encounters;
+package com.svhelloworld.cdc.encounters.model;
 
 import java.util.stream.Stream;
 

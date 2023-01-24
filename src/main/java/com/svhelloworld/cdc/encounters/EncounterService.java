@@ -1,5 +1,7 @@
 package com.svhelloworld.cdc.encounters;
 
+import com.svhelloworld.cdc.encounters.dao.EncounterDao;
+import com.svhelloworld.cdc.encounters.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
