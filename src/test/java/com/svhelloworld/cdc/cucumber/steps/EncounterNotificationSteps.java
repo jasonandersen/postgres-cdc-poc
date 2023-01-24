@@ -1,9 +1,9 @@
 package com.svhelloworld.cdc.cucumber.steps;
 
-import com.svhelloworld.cdc.DiagnosisCode;
-import com.svhelloworld.cdc.Encounter;
-import com.svhelloworld.cdc.EncounterService;
-import com.svhelloworld.cdc.ProcedureCode;
+import com.svhelloworld.cdc.encounters.DiagnosisCode;
+import com.svhelloworld.cdc.encounters.Encounter;
+import com.svhelloworld.cdc.encounters.EncounterService;
+import com.svhelloworld.cdc.encounters.ProcedureCode;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

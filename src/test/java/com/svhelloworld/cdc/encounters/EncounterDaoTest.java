@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc;
+package com.svhelloworld.cdc.encounters;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -39,6 +39,28 @@ public class EncounterDaoTest {
     }
     
     @Test
+    void modifyStatus() {
+        // save as NEW encounter
+        Encounter newEncounter = buildEncounter();
+        Encounter savedEncounter = encounterDao.save(newEncounter);
+        assertEquals(EncounterStatus.NEW, savedEncounter.getStatus());
+        
+        // update to IN_PROGRESS
+        savedEncounter.setStatus(EncounterStatus.IN_PROGRESS);
+        Encounter updatedEncounter = encounterDao.save(savedEncounter);
+    
+        // assert results
+        Optional<Encounter> result = encounterDao.findById(updatedEncounter.getId());
+        if (result.isPresent()) {
+            Encounter reloadedEncounter = result.get();
+            assertEquals(EncounterStatus.IN_PROGRESS, reloadedEncounter.getStatus());
+        } else {
+            fail(); // shouldn't get to here
+        }
+        
+    }
+    
+    @Test
     void saveWithProcedureCodes() {
         // new encounter
         Encounter newEncounter = buildEncounter();
@@ -60,12 +82,16 @@ public class EncounterDaoTest {
     }
     
     @Test
-    void saveWithDiagnosisCodes() {
+    void saveWithDxCodes() {
+        // new encounter
         Encounter newEncounter = buildEncounter();
         newEncounter.addDiagnosis(DiagnosisCode.from("A36.3", "Cutaneous diphtheria"));
+        // save encounter
         Encounter savedEncounter = encounterDao.save(newEncounter);
+        // re-load encounter from database
         Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
         if (result.isPresent()) {
+            // assert results
             Encounter retrievedEncounter = result.get();
             assertEquals(1, retrievedEncounter.getDiagnosisCodes().size());
             DiagnosisCode diagnosisCode = retrievedEncounter.getDiagnosisCodes().iterator().next();
@@ -76,10 +102,32 @@ public class EncounterDaoTest {
         }
     }
     
+    @Test
+    void saveWithMultipleDxCodesAndMultipleProcedureCodes() {
+        // new encounter
+        Encounter newEncounter = buildEncounter();
+        newEncounter.addProcedure(ProcedureCode.from("86930", "Frozen blood prep"));
+        newEncounter.addProcedure(ProcedureCode.from("86950", "Leukacyte transfusion"));
+        newEncounter.addDiagnosis(DiagnosisCode.from("A36.3", "Cutaneous diphtheria"));
+        newEncounter.addDiagnosis(DiagnosisCode.from("A36.0", "Pharyngeal diphtheria"));
+        // save encounter
+        Encounter savedEncounter = encounterDao.save(newEncounter);
+        // re-load encounter from database
+        Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
+        if (result.isPresent()) {
+            // assert results
+            Encounter retrievedEncounter = result.get();
+            assertEquals(2, retrievedEncounter.getProcedureCodes().size());
+            assertEquals(2, retrievedEncounter.getDiagnosisCodes().size());
+        } else {
+            fail("Encounter was not found in the database");
+        }
+    }
+    
     private Encounter buildEncounter() {
         Encounter encounter = new Encounter();
         encounter.setNotes("I like monkeys!");
-        encounter.setStatusId(100);
+        encounter.setStatus(EncounterStatus.NEW);
         encounter.setPatientId(UUID.randomUUID().toString());
         return encounter;
     }

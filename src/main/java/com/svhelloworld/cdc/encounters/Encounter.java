@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc;
+package com.svhelloworld.cdc.encounters;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +35,7 @@ public class Encounter {
     private String patientId;
     
     @Column(name = "encounter_status_id")
-    private int statusId;
+    private EncounterStatus status;
     
     @Column(name = "notes")
     private String notes;
@@ -76,12 +76,19 @@ public class Encounter {
         this.patientId = patientId;
     }
     
-    public int getStatusId() {
-        return statusId;
+    public EncounterStatus getStatus() {
+        return status;
     }
     
+    public void setStatus(EncounterStatus status) {
+        this.status = status;
+    }
+    
+    /**
+     * Allows tests to pass in a status ID that we'll resolve into a {@link EncounterStatus} instance.
+     */
     public void setStatusId(int statusId) {
-        this.statusId = statusId;
+        setStatus(EncounterStatus.fromId(statusId));
     }
     
     public String getNotes() {

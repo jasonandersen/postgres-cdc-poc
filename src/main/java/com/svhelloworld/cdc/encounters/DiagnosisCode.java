@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc;
+package com.svhelloworld.cdc.encounters;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

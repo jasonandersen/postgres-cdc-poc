@@ -1,4 +1,4 @@
-package com.svhelloworld.cdc;
+package com.svhelloworld.cdc.encounters;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
