@@ -1,8 +1,11 @@
-package com.svhelloworld.cdc.encounters.model;
+package com.svhelloworld.cdc.encounters;
 
 import com.svhelloworld.cdc.Event;
 import com.svhelloworld.cdc.encounters.dao.EncounterDao;
 import com.svhelloworld.cdc.encounters.dao.EncounterOutboxEntryDao;
+import com.svhelloworld.cdc.encounters.model.Encounter;
+import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
+import com.svhelloworld.cdc.encounters.model.OutboxStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,23 +19,17 @@ import java.util.Optional;
 /**
  * A batch of unresolved {@link EncounterOutboxEntry}s to turn into {@link Event}s.
  */
-public class EncounterOutboxEntryBatch {
+public class EncounterOutboxBatch {
     
-    private static final Logger log = LoggerFactory.getLogger(EncounterOutboxEntryBatch.class);
+    private static final Logger log = LoggerFactory.getLogger(EncounterOutboxBatch.class);
     private static final String EVENT_TYPE = "EncounterUpdatedEvent";
-    
-    /**
-     * Comparator to sort outbox entries by timestamp.
-     */
-    private static final Comparator<EncounterOutboxEntry> COMPARATOR =
-            Comparator.comparing(EncounterOutboxEntry::getCreatedOn);
     
     private final EncounterDao encounterDao;
     private final EncounterOutboxEntryDao outboxEntryDao;
     private final List<EncounterOutboxEntry> entries;
     private final Map<Long, List<EncounterOutboxEntry>> entriesById;
     
-    public EncounterOutboxEntryBatch(
+    public EncounterOutboxBatch(
             EncounterDao encounterDao,
             EncounterOutboxEntryDao outboxEntryDao) {
         
@@ -68,7 +65,9 @@ public class EncounterOutboxEntryBatch {
         List<Event<Encounter>> events = new LinkedList<>();
         if (entriesArePresent()) {
             Iterable<Encounter> encounters = encounterDao.findAllById(entriesById.keySet());
-            encounters.forEach(e -> events.add(buildEvent(e,entriesById.get(e.getId()))));
+            encounters.forEach(
+                    e -> events.add(buildEvent(e, entriesById.get(e.getId())))
+            );
         }
         log.debug("Built {} events", events.size());
         return events;
@@ -89,6 +88,20 @@ public class EncounterOutboxEntryBatch {
     }
     
     /**
+     * If there are multiple {@link EncounterOutboxEntry}s for a single {@link Encounter}, we'll use the ID and
+     * timestamp from the most recent entry.
+     */
+    private EncounterOutboxEntry findMostRecentOutboxEntry(List<EncounterOutboxEntry> outboxEntries) {
+        Optional<EncounterOutboxEntry> result = outboxEntries
+                .stream()
+                .max(Comparator.comparing(EncounterOutboxEntry::getCreatedOn));
+        if (result.isPresent()) {
+            return result.get();
+        }
+        throw new IllegalArgumentException("No outbox entries were discovered.");
+    }
+    
+    /**
      * Organizes all the {@link EncounterOutboxEntry}s into a map keyed by encounter ID.
      */
     private Map<Long, List<EncounterOutboxEntry>> entriesById() {
@@ -104,17 +117,5 @@ public class EncounterOutboxEntryBatch {
             }
         }
         return byId;
-    }
-    
-    /**
-     * If there are multiple {@link EncounterOutboxEntry}s for a single {@link Encounter}, we'll use the ID and
-     * timestamp from the most recent entry.
-     */
-    private EncounterOutboxEntry findMostRecentOutboxEntry(List<EncounterOutboxEntry> outboxEntries) {
-        Optional<EncounterOutboxEntry> result = outboxEntries.stream().max(COMPARATOR);
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new IllegalArgumentException("No outbox entries were discovered.");
     }
 }

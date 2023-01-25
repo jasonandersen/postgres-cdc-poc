@@ -11,7 +11,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * This entity represents a change in the underlying tables representing the aggregate {@link Encounter}.
+ * Any time a record is inserted or updated in the underlying tables that store {@link Encounter} aggregates, the
+ * change will be record in the encounters_outbox table. This entity represents an outbox entry.
  */
 @Entity
 @Table(name = "encounters_outbox")

@@ -9,6 +9,9 @@ import jakarta.persistence.Table;
 @Table(name = "icd_codes")
 public class DiagnosisCode {
     
+    /**
+     * Convenience method to build out instances.
+     */
     public static DiagnosisCode from(String icdCode, String description) {
         DiagnosisCode out = new DiagnosisCode();
         out.setIcdCode(icdCode);

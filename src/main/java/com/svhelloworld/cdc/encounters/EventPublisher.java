@@ -22,7 +22,7 @@ public class EventPublisher {
         log.info("EventPublisher instantiated");
     }
     
-    public void publish(List<?> events) {
+    public void publish(List<Object> events) {
         log.debug("Publishing {} events", events.size());
         events.forEach(eventBus::post);
     }

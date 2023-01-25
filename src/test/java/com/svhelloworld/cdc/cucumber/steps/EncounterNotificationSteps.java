@@ -20,7 +20,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Glue code to execute steps defined in the Cucumber step definition files.
+ * Glue code to execute steps defined in the Cucumber step definition files. The lifecycle of this class is managed
+ * by Spring's ApplicationContext so we can leverage Spring's DI for dependencies.
  */
 public class EncounterNotificationSteps {
     

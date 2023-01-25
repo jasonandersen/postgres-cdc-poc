@@ -4,7 +4,6 @@ import com.svhelloworld.cdc.encounters.dao.EncounterDao;
 import com.svhelloworld.cdc.encounters.dao.EncounterOutboxEntryDao;
 import com.svhelloworld.cdc.encounters.model.Encounter;
 import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
-import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntryBatch;
 import com.svhelloworld.cdc.encounters.model.OutboxStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service class to perform business operations against {@link Encounter} aggregates.
+ */
 @Service
 public class EncounterService {
     
@@ -44,13 +46,19 @@ public class EncounterService {
     @Scheduled(fixedRate = OUTBOX_POLLING_FREQUENCY)
     public void pollEncounterOutbox() {
         log.debug("Polling encounters outbox");
-        EncounterOutboxEntryBatch batch = new EncounterOutboxEntryBatch(encounterDao, outboxEntryDao);
+        EncounterOutboxBatch batch = new EncounterOutboxBatch(encounterDao, outboxEntryDao);
         if (batch.entriesArePresent()) {
             log.debug("{} outbox entries discovered", batch.numberOfEntries());
-            // TODO -- OPEN TRANSACTION BOUNDARY
+            
+            // We need to make sure that resolving the outbox entries in the database and publishing events
+            // are both considered to be part of the same atomic transaction. They MUST succeed or fail together.
+            // Worst possible scenario is that the database is updated but events don't get published. That will
+            // put our system in an incorrect state.
+            
+            // ***** OPEN TRANSACTION BOUNDARY *****
             batch.resolveOutboxEntries();
             eventPublisher.publish(batch.getEvents());
-            // TODO -- CLOSE TRANSACTION BOUNDARY
+            // ***** CLOSE TRANSACTION BOUNDARY *****
         }
     }
     
@@ -61,6 +69,4 @@ public class EncounterService {
     public List<EncounterOutboxEntry> getUnresolvedOutboxEntries() {
         return outboxEntryDao.findByStatus(OutboxStatus.UNRESOLVED);
     }
-    
-    
 }
