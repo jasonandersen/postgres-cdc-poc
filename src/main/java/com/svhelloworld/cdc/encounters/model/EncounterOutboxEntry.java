@@ -22,7 +22,7 @@ public class EncounterOutboxEntry {
     private UUID eventId;
     
     @Column(name = "encounter_id")
-    private Integer encounterId;
+    private Long encounterId;
     
     @Column(name = "outbox_status_id")
     private OutboxStatus status;
@@ -38,11 +38,11 @@ public class EncounterOutboxEntry {
         this.eventId = eventId;
     }
     
-    public Integer getEncounterId() {
+    public Long getEncounterId() {
         return encounterId;
     }
     
-    public void setEncounterId(Integer encounterId) {
+    public void setEncounterId(Long encounterId) {
         this.encounterId = encounterId;
     }
     

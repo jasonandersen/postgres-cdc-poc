@@ -1,4 +1,5 @@
-Feature: When an encounter is created or modified in any we, we are notified of the changes
+# We are validating that when we modify entities in the database, we are then notified of those data changes
+Feature: When an encounter is created or modified in any way, we are notified of the changes
 
   Background:
     Given this new encounter that has not been saved
@@ -12,13 +13,19 @@ Feature: When an encounter is created or modified in any we, we are notified of 
       | A36.3 |
       | A36.1 |
 
-  Scenario: Create a new encounter
+
+  Scenario: Save a new encounter
     When the encounter is saved
     Then I am notified that a new encounter has been created
+    And all encounter outbox entries have been resolved
 
-  # Update existing encounter
 
-  # Delete encounter
+  Scenario: Update existing encounter with a new status
+    Given the encounter is saved
+    And the encounter status is changed to "IN_PROGRESS"
+    When the encounter is saved
+    Then I am notified that an existing encounter has been updated
+
 
   # Add DX code to encounter
 
@@ -29,3 +36,5 @@ Feature: When an encounter is created or modified in any we, we are notified of 
   # Remove DX code from encounter
 
   # Add multiple CPT codes and DX codes from encounter
+
+  # Delete encounter

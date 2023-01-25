@@ -4,7 +4,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 /**
- * Converter classed used by Hibernate to convert integer values to and from {@link EncounterStatus} enum values.
+ * Converter class used by Hibernate to convert integer values to and from {@link EncounterStatus} enum values.
  */
 @Converter(autoApply = true)
 public class EncounterStatusConverter implements AttributeConverter<EncounterStatus, Integer> {

@@ -3,7 +3,7 @@ package com.svhelloworld.cdc.encounters.model;
 import java.util.stream.Stream;
 
 /**
- * Status of an encounter
+ * Status of an {@link Encounter}.
  */
 public enum EncounterStatus {
     NEW(100),
