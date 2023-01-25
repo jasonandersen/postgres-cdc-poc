@@ -18,8 +18,8 @@ Feature: When an encounter is created or modified in any way, we are notified of
 
   Background:
     Given this new encounter that has not been saved
-      | PatientId                            | StatusId | Notes                |
-      | debbcd5e-98d4-11ed-a8fc-0242ac120002 | 100      | Here are some notes. |
+      | PatientId                            | StatusName | Notes                |
+      | debbcd5e-98d4-11ed-a8fc-0242ac120002 | NEW        | Here are some notes. |
     And the encounter has these CPT codes
       | 86931 |
       | 86960 |

@@ -11,6 +11,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -84,6 +86,10 @@ public class Encounter {
         this.status = status;
     }
     
+    public void setStatusName(String statusName) {
+        this.status = EncounterStatus.valueOf(statusName);
+    }
+    
     /**
      * Allows tests to pass in a status ID that we'll resolve into a {@link EncounterStatus} instance.
      */
@@ -143,6 +149,11 @@ public class Encounter {
             diagnosisCodes = new HashSet<>();
         }
         diagnosisCodes.add(diagnosis);
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     
     @Override

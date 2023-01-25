@@ -1,9 +1,8 @@
 package com.svhelloworld.cdc.cucumber.steps;
 
-import com.google.common.eventbus.Subscribe;
 import com.svhelloworld.cdc.Event;
+import com.svhelloworld.cdc.encounters.EncounterEventsConsumer;
 import com.svhelloworld.cdc.encounters.EncounterService;
-import com.svhelloworld.cdc.encounters.EventPublisher;
 import com.svhelloworld.cdc.encounters.model.DiagnosisCode;
 import com.svhelloworld.cdc.encounters.model.Encounter;
 import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
@@ -14,40 +13,31 @@ import io.cucumber.java.en.When;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Glue code to execute steps defined in the Cucumber step definition files. The lifecycle of this class is managed
- * by Spring's ApplicationContext so we can leverage Spring's DI for dependencies.
+ * by Spring's ApplicationContext, so we can leverage Spring's DI for dependencies.
  */
 public class EncounterNotificationSteps {
     
     private static final Logger log = LoggerFactory.getLogger(EncounterNotificationSteps.class);
-    private static final int EVENT_WAIT_TIME = 5000;
+    private static final int EVENT_WAIT_TIME = 10000;
     
     private final EncounterService encounterService;
-    private final List<Event<Encounter>> eventsReceived;
+    private final EncounterEventsConsumer eventsConsumer;
     private Encounter targetEncounter;
     
     public EncounterNotificationSteps(
-            EventPublisher eventPublisher,
-            EncounterService encounterService) {
+            EncounterService encounterService,
+            EncounterEventsConsumer eventsConsumer) {
         
         this.encounterService = encounterService;
-        this.eventsReceived = new ArrayList<>();
-        eventPublisher.registerListener(this);
+        this.eventsConsumer = eventsConsumer;
         log.info("Change data capture step definitions instantiated.");
-    }
-    
-    /**
-     * Receive events from the in-memory event bus. This is a proxy for receiving in-bound events off an SQS queue.
-     */
-    @Subscribe
-    public void handleEncounterEvent(Event<Encounter> event) {
-        eventsReceived.add(event);
     }
     
     /*
@@ -71,7 +61,7 @@ public class EncounterNotificationSteps {
     
     @Given("the encounter status is changed to {string}")
     public void theEncounterStatusIsChangedTo(String status) {
-        fail();
+        targetEncounter.setStatusName(status);
     }
     
     /*
@@ -89,18 +79,24 @@ public class EncounterNotificationSteps {
     
     @Then("I am notified that a new encounter has been created")
     public void iAmNotifiedThatANewEncounterHasBeenCreated() throws InterruptedException {
-        int startingEventCount = eventsReceived.size();
+        int startingEventCount = eventsConsumer.numberEventsReceived();
         
         waitForEvent();
         
-        assertEquals(startingEventCount + 1, eventsReceived.size());
-        Event<Encounter> event = eventsReceived.get(eventsReceived.size()-1);
-        assertEquals(targetEncounter, event.getBody());
+        assertEquals(startingEventCount + 1, eventsConsumer.numberEventsReceived());
+        Optional<Event> event = eventsConsumer.mostRecentEvent();
+        if (event.isPresent()) {
+            Event mostRecent = event.get();
+            Encounter receivedEncounter = (Encounter) mostRecent.getBody();
+            assertEquals(targetEncounter, receivedEncounter);
+        } else {
+            fail("Event not found.");
+        }
     }
     
     @Then("I am notified that an existing encounter has been updated")
-    public void iAmNotifiedThatAnExistingEncounterHasBeenUpdated() {
-        fail();
+    public void iAmNotifiedThatAnExistingEncounterHasBeenUpdated() throws InterruptedException {
+        this.iAmNotifiedThatANewEncounterHasBeenCreated();
     }
     
     @Then("all encounter outbox entries have been resolved")
@@ -114,10 +110,13 @@ public class EncounterNotificationSteps {
      * received or the specified EVENT_WAIT_TIME has passed.
      */
     private void waitForEvent() throws InterruptedException {
+        log.debug("Waiting for event. Events received: {}", eventsConsumer.numberEventsReceived());
         long startTime = System.currentTimeMillis();
-        int startingEventCount = eventsReceived.size();
-        while (System.currentTimeMillis() - startTime < EVENT_WAIT_TIME && eventsReceived.size() == startingEventCount) {
+        int startingEventCount = eventsConsumer.numberEventsReceived();
+        while (System.currentTimeMillis() - startTime < EVENT_WAIT_TIME &&
+                        eventsConsumer.numberEventsReceived() == startingEventCount) {
             Thread.sleep(200);
         }
+        log.debug("Finished waiting for event. Events received: {}", eventsConsumer.mostRecentEvent());
     }
 }

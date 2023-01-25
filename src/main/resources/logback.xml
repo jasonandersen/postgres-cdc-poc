@@ -12,4 +12,5 @@
     <logger name="com.svhelloworld" level="DEBUG" />
     <logger name="org.hibernate" level="INFO" />
     <logger name="org.springframework" level="INFO" />
+    <logger name="com.google.common.eventbus" level="DEBUG" />
 </configuration>
