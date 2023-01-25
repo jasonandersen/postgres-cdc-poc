@@ -93,7 +93,7 @@ public class EncounterNotificationSteps {
         waitForEvent();
         
         assertEquals(startingEventCount + 1, eventsReceived.size());
-        Event<Encounter> event = eventsReceived.get(0);
+        Event<Encounter> event = eventsReceived.get(eventsReceived.size()-1);
         assertEquals(targetEncounter, event.getBody());
     }
     

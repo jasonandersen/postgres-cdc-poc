@@ -28,13 +28,16 @@ public class EncounterOutboxEntryBatch {
             Comparator.comparing(EncounterOutboxEntry::getCreatedOn);
     
     private final EncounterDao encounterDao;
+    private final EncounterOutboxEntryDao outboxEntryDao;
     private final List<EncounterOutboxEntry> entries;
     private final Map<Long, List<EncounterOutboxEntry>> entriesById;
     
     public EncounterOutboxEntryBatch(
             EncounterDao encounterDao,
             EncounterOutboxEntryDao outboxEntryDao) {
+        
         this.encounterDao = encounterDao;
+        this.outboxEntryDao = outboxEntryDao;
         this.entries = outboxEntryDao.findByStatus(OutboxStatus.UNRESOLVED);
         this.entriesById = entriesById();
         if (entriesArePresent()) {
@@ -75,7 +78,9 @@ public class EncounterOutboxEntryBatch {
      * Mark all the unresolved entries as RESOLVED.
      */
     public void resolveOutboxEntries() {
-        log.warn("resolveOutboxEntries() NOT IMPLEMENTED");
+        entries.forEach(e -> e.setStatus(OutboxStatus.RESOLVED));
+        outboxEntryDao.saveAll(entries);
+        log.debug("Marked {} outbox entries as RESOLVED", entries.size());
     }
     
     private Event<Encounter> buildEvent(Encounter encounter, List<EncounterOutboxEntry> outboxEntries) {
