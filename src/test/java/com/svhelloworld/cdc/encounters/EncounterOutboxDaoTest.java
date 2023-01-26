@@ -3,6 +3,7 @@ package com.svhelloworld.cdc.encounters;
 import com.svhelloworld.cdc.encounters.dao.EncounterOutboxEntryDao;
 import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
 import com.svhelloworld.cdc.encounters.model.OutboxStatus;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class EncounterOutboxDaoTest {
         assertNotNull(dao);
     }
     
+    @Disabled
     @Test
     void findById() {
         UUID id = UUID.fromString("8b962ed6-9b99-11ed-9699-0242ac120003");

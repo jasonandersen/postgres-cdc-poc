@@ -1,6 +1,6 @@
-package com.svhelloworld.cdc.encounters;
+package com.svhelloworld.cdc;
 
-import com.svhelloworld.cdc.Event;
+import com.svhelloworld.cdc.encounters.EncounterEventsConsumer;
 import com.svhelloworld.cdc.encounters.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

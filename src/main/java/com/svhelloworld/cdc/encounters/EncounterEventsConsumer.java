@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Normally, we would consume events coming off an SQS queue but this
+ * Normally, we would consume events coming off an SQS queue and ingest them. This class is a very simple proxy for that.
  */
 @Component
 public class EncounterEventsConsumer {

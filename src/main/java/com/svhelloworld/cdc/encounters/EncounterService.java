@@ -1,5 +1,6 @@
 package com.svhelloworld.cdc.encounters;
 
+import com.svhelloworld.cdc.EventPublisher;
 import com.svhelloworld.cdc.encounters.dao.EncounterDao;
 import com.svhelloworld.cdc.encounters.dao.EncounterOutboxEntryDao;
 import com.svhelloworld.cdc.encounters.model.Encounter;
@@ -43,6 +44,10 @@ public class EncounterService {
         return encounterDao.save(encounter);
     }
     
+    /**
+     * Check for notifications in the outbox that data has changed in the underlying tables. If changes are found, pull
+     * them out and generate a set of events that describe those changes.
+     */
     @Scheduled(fixedRate = OUTBOX_POLLING_FREQUENCY)
     public void pollEncounterOutbox() {
         log.debug("Polling encounters outbox");

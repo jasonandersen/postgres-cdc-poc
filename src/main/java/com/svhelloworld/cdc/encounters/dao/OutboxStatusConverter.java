@@ -1,5 +1,6 @@
-package com.svhelloworld.cdc.encounters.model;
+package com.svhelloworld.cdc.encounters.dao;
 
+import com.svhelloworld.cdc.encounters.model.OutboxStatus;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

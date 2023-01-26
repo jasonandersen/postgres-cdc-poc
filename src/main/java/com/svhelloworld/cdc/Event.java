@@ -6,6 +6,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Basic event to transport a message.
+ * @param <T> type representing the body of the event.
+ */
 public class Event<T extends Object> {
     
     private final UUID eventId;

@@ -18,6 +18,9 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Root of the Encounter aggregate.
+ */
 @Entity
 @Table(name="encounters")
 public class Encounter {
