@@ -7,6 +7,13 @@
 -- January 19, 2023
 ----------------------------------------------------------
 
+----------------------------------
+-- uuid-ossp extension required to
+-- provide UUID functions to generate
+-- UUID as primary keys.
+----------------------------------
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 ----------------------------------
 -- Encounter schema
