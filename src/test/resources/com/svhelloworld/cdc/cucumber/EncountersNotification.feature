@@ -13,7 +13,7 @@
 #     * Domain events are published to the world (in this PoC, we're just using an in-memory Guava EventBus to
 #       proxy for something like EventBridge or SNS)
 #
-Feature: When an encounter is created or modified in any way, we are notified of the changes
+Feature: When an encounter is created or modified, we are notified of the changes
 
 
   Background:
