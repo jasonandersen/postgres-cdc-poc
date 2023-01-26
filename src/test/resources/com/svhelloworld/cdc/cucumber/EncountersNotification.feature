@@ -1,3 +1,4 @@
+# ====================================
 # Change Data Capture Proof of Concept
 # ====================================
 #
@@ -10,8 +11,8 @@
 #     * trigger inserts a record into encounters_outbox
 #     * EncounterService polls encounters_outbox for UNRESOLVED entries
 #     * All entries in the outbox are retrieved and transformed into domain events
-#     * Domain events are published to the world (in this PoC, we're just using an in-memory Guava EventBus to
-#       proxy for something like EventBridge or SNS)
+#     * Domain events are published to the world (in this PoC, we're just hard-coding the event publisher to the
+#       event consumer to proxy for something like EventBridge or SNS)
 #
 Feature: When an encounter is created or modified, we are notified of the changes
 

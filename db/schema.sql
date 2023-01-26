@@ -8,7 +8,6 @@
 ----------------------------------------------------------
 
 
-
 ----------------------------------
 -- Encounter schema
 ----------------------------------
@@ -192,5 +191,17 @@ $$
 CREATE TRIGGER encounters_trigger
     AFTER INSERT OR UPDATE
     ON "encounters"
+    FOR EACH ROW
+EXECUTE PROCEDURE fn_encounters_outbox_trigger();
+
+CREATE TRIGGER encounter_dx_trigger
+    AFTER INSERT OR UPDATE
+    ON "encounter_dx"
+    FOR EACH ROW
+EXECUTE PROCEDURE fn_encounters_outbox_trigger();
+
+CREATE TRIGGER encounter_procedures_trigger
+    AFTER INSERT OR UPDATE
+    ON "encounter_procedures"
     FOR EACH ROW
 EXECUTE PROCEDURE fn_encounters_outbox_trigger();
