@@ -21,4 +21,4 @@ The entry point for this PoC is [EncountersNotification.feature](src/test/resour
 This is a standard Maven project. All JUnit tests and Cucumber tests can be executed from a standard `mvn clean test` command. The database is required to execute the tests.
 
 #### Database
-The database is run from the `docker-compose.yml` file in the project root. The schema is built from the `db/schema.sql` file. There's no current mechanism to automatically build the schema from the SQL file so the `schema.sql` file needs to be executed manually.
+The database is run from the `docker-compose.yml` file in the project root. The schema is built from the `db/schema.sql` file. The schema will be executed directly from the `docker-compose.yml` file.
