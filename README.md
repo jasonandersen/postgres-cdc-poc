@@ -17,6 +17,8 @@ When rows are inserted or updated in the `encounters` table, `encounter_dx` tabl
 ### BDD & Cucumber
 The entry point for this PoC is [EncountersNotification.feature](src/test/resources/com/svhelloworld/cdc/cucumber/EncountersNotification.feature) BDD feature file. The glue code for the feature file is [EncounterNotificationSteps](src/test/java/com/svhelloworld/cdc/cucumber/steps/EncounterNotificationSteps.java) class. The project is instrumented with Spring dependency injection. The Cucumber glue code classes are all Spring beans so their lifecycle is managed by Spring. Dependencies are injected into test scenarios.
 
+As strings are pulled out of the feature files and passed into the step definition methods, they are transformed into domain objects by the [TypeConversion](src/test/java/com/svhelloworld/cdc/cucumber/types/TypeConversion.java) class. Cucumber data tables can be transformed into full POJOs to pass into step definition methods by the [InputTransformer](src/test/java/com/svhelloworld/cdc/cucumber/types/InputTransformer.java) class. This allows us to keep step definition files clean, simple and readable.
+
 ### Usage
 This is a standard Maven project. All JUnit tests and Cucumber tests can be executed from a standard `mvn clean test` command. The database is required to execute the tests.
 
