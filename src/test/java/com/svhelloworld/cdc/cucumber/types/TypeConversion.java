@@ -2,9 +2,11 @@ package com.svhelloworld.cdc.cucumber.types;
 
 import com.svhelloworld.cdc.encounters.model.DiagnosisCode;
 import com.svhelloworld.cdc.encounters.model.Encounter;
+import com.svhelloworld.cdc.encounters.model.EncounterStatus;
 import com.svhelloworld.cdc.encounters.model.ProcedureCode;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.DefaultDataTableCellTransformer;
+import io.cucumber.java.ParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +38,27 @@ public class TypeConversion {
         return inputTransformer.transformToBean(input, Encounter.class);
     }
     
+    @ParameterType(".*")
+    public EncounterStatus encounterStatus(String input) {
+        return EncounterStatus.valueOf(input);
+    }
+    
+    @ParameterType(".*")
+    public ProcedureCode procedureCode(String input) {
+        return (ProcedureCode) defaultTransformation(input, ProcedureCode.class);
+    }
+    
+    @ParameterType(".*")
+    public DiagnosisCode diagnosisCode(String input) {
+        return (DiagnosisCode) defaultTransformation(input, DiagnosisCode.class);
+    }
+    
     /**
      * Convert simple input parameters from tables.
      */
     @DefaultDataTableCellTransformer
     public Object defaultTransformation(String input, Type type) {
+        
         log.info("CPT code: {}, Type: {}", input, type);
         
         // convert procedure codes

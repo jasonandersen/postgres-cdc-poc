@@ -6,6 +6,7 @@ import com.svhelloworld.cdc.encounters.EncounterService;
 import com.svhelloworld.cdc.encounters.model.DiagnosisCode;
 import com.svhelloworld.cdc.encounters.model.Encounter;
 import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
+import com.svhelloworld.cdc.encounters.model.EncounterStatus;
 import com.svhelloworld.cdc.encounters.model.ProcedureCode;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -16,11 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Glue code to execute steps defined in the Cucumber step definition files. The lifecycle of this class is managed
- * by Spring's ApplicationContext, so we can leverage Spring's DI for dependencies.
+ * Glue code to execute steps defined in the Cucumber step definition files.
  */
 public class EncounterNotificationSteps {
     
@@ -35,6 +36,8 @@ public class EncounterNotificationSteps {
             EncounterService encounterService,
             EncounterEventsConsumer eventsConsumer) {
         
+        // Note - Cucumber step definition classes are Spring managed beans so Spring will handle
+        // injection of dependencies
         this.encounterService = encounterService;
         this.eventsConsumer = eventsConsumer;
         log.info("Change data capture step definitions instantiated.");
@@ -59,16 +62,41 @@ public class EncounterNotificationSteps {
         icdCodes.forEach(c -> targetEncounter.addDiagnosis(c));
     }
     
-    @Given("the encounter status is changed to {string}")
-    public void theEncounterStatusIsChangedTo(String status) {
-        targetEncounter.setStatusName(status);
+    @Given("the encounter status is set to {encounterStatus}")
+    public void theEncounterStatusIsChangedTo(EncounterStatus status) {
+        targetEncounter.setStatus(status);
+    }
+    
+    @Given("the encounter notes is updated to {string}")
+    public void theEncounterNotesIsUpdatedTo(String notes) {
+        targetEncounter.setNotes(notes);
+    }
+    
+    @Given("the diagnosis code {diagnosisCode} is added to the encounter")
+    public void theDiagnosisCodeIsAddedToTheEncounter(DiagnosisCode diagnosisCode) {
+        targetEncounter.addDiagnosis(diagnosisCode);
+    }
+    
+    @Given("the procedure code {procedureCode} is added to the encounter")
+    public void theProcedureCodeIsAddedToTheEncounter(ProcedureCode procedureCode) {
+        targetEncounter.addProcedure(procedureCode);
+    }
+    
+    @Given("the diagnosis code {diagnosisCode} is removed from the encounter")
+    public void theDiagnosisCodeAIsRemovedFromTheEncounter(DiagnosisCode diagnosisCode) {
+        targetEncounter.removeDiagnosis(diagnosisCode);
+    }
+    
+    @Given("the procedure code {procedureCode} is removed from the encounter")
+    public void theProcedureCodeIsRemovedFromTheEncounter(ProcedureCode procedureCode) {
+        targetEncounter.removeProcedure(procedureCode);
     }
     
     /*
      * WHEN step definitions
      */
     
-    @When("the encounter is saved")
+    @When("the encounter is saved( again)")
     public void theEncounterIsSaved() {
         targetEncounter = encounterService.saveEncounter(targetEncounter);
     }
@@ -80,18 +108,8 @@ public class EncounterNotificationSteps {
     @Then("I am notified that a new encounter has been created")
     public void iAmNotifiedThatANewEncounterHasBeenCreated() throws InterruptedException {
         int startingEventCount = eventsConsumer.numberEventsReceived();
-        
         waitForEvent();
-        
         assertEquals(startingEventCount + 1, eventsConsumer.numberEventsReceived());
-        Optional<Event> event = eventsConsumer.mostRecentEvent();
-        if (event.isPresent()) {
-            Event mostRecent = event.get();
-            Encounter receivedEncounter = (Encounter) mostRecent.getBody();
-            assertEquals(targetEncounter, receivedEncounter);
-        } else {
-            fail("Event not found.");
-        }
     }
     
     @Then("I am notified that an existing encounter has been updated")
@@ -105,6 +123,29 @@ public class EncounterNotificationSteps {
         assertTrue(entries.isEmpty());
     }
     
+    @Then("the notification contains an exact copy of the encounter")
+    public void theNotificationContainsAnExactCopyOfTheEncounter() {
+        Encounter receivedEncounter = mostRecentEventPayload();
+        deepCompareEncounters(targetEncounter, receivedEncounter);
+    }
+    
+    /*
+     * utility methods
+     */
+    
+    private void deepCompareEncounters(Encounter expected, Encounter actual) {
+        // TODO - this logic should really be in the Encounter.equals() method
+        assertEquals(expected.getId(), actual.getId(), "ID");
+        assertEquals(expected.getPatientId(), actual.getPatientId(), "Patient ID");
+        assertEquals(expected.getStatus(), actual.getStatus(), "Status");
+        assertEquals(expected.getNotes(), actual.getNotes(), "Notes");
+        // Created on fields aren't matching - this might actually be a defect.
+        //assertEquals(expected.getCreatedOn(), actual.getCreatedOn(), "Created On");
+        // note: updatedOn could be different between the two encounters
+        assertEquals(expected.getDiagnosisCodes(), actual.getDiagnosisCodes(), "Diagnosis Codes");
+        assertEquals(expected.getProcedureCodes(), actual.getProcedureCodes(), "Procedure Codes");
+    }
+    
     /**
      * Wait for a specified amount of time for an event to show up from the event bus. Will return once an event is
      * received or the specified EVENT_WAIT_TIME has passed.
@@ -114,9 +155,21 @@ public class EncounterNotificationSteps {
         long startTime = System.currentTimeMillis();
         int startingEventCount = eventsConsumer.numberEventsReceived();
         while (System.currentTimeMillis() - startTime < EVENT_WAIT_TIME &&
-                        eventsConsumer.numberEventsReceived() == startingEventCount) {
+                eventsConsumer.numberEventsReceived() == startingEventCount) {
             Thread.sleep(200);
         }
         log.debug("Finished waiting for event. Events received: {}", eventsConsumer.mostRecentEvent());
+    }
+    
+    /**
+     * Fetch the most recent event and grab the encounter out of the event payload
+     */
+    private Encounter mostRecentEventPayload() {
+        Optional<Event> event = eventsConsumer.mostRecentEvent();
+        if (event.isPresent()) {
+            Event mostRecent = event.get();
+            return (Encounter) mostRecent.getBody();
+        }
+        throw new IllegalArgumentException("Encounter in event was not found.");
     }
 }

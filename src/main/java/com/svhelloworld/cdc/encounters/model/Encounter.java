@@ -144,11 +144,19 @@ public class Encounter {
         procedureCodes.add(procedure);
     }
     
+    public void removeProcedure(ProcedureCode procedure) {
+        procedureCodes.remove(procedure);
+    }
+    
     public void addDiagnosis(DiagnosisCode diagnosis) {
         if (diagnosisCodes == null) {
             diagnosisCodes = new HashSet<>();
         }
         diagnosisCodes.add(diagnosis);
+    }
+    
+    public void removeDiagnosis(DiagnosisCode diagnosisCode) {
+        diagnosisCodes.remove(diagnosisCode);
     }
     
     @Override

@@ -37,19 +37,47 @@ Feature: When an encounter is created or modified in any way, we are notified of
 
   Scenario: Update existing encounter with a new status
     Given the encounter is saved
-    And the encounter status is changed to "IN_PROGRESS"
+    And the encounter status is set to IN_PROGRESS
     When the encounter is saved
     Then I am notified that an existing encounter has been updated
+    And the notification contains an exact copy of the encounter
 
 
-  # Add DX code to encounter
+  Scenario: Update notes on existing encounter
+    Given the encounter is saved
+    And the encounter notes is updated to "I changed the notes to this value."
+    When the encounter is saved
+    Then I am notified that an existing encounter has been updated
+    And the notification contains an exact copy of the encounter
 
-  # Add CPT code to encounter
 
-  # Remove CPT code from encounter
+  Scenario: Add DX code to encounter
+    Given the encounter is saved
+    And the diagnosis code A36.0 is added to the encounter
+    When the encounter is saved again
+    Then I am notified that an existing encounter has been updated
+    And the notification contains an exact copy of the encounter
 
-  # Remove DX code from encounter
 
-  # Add multiple CPT codes and DX codes from encounter
+  Scenario: Add CPT code to encounter
+    Given the encounter is saved
+    And the procedure code 86932 is added to the encounter
+    When the encounter is saved again
+    Then I am notified that an existing encounter has been updated
+    And the notification contains an exact copy of the encounter
 
-  # Delete encounter
+
+  Scenario: Remove DX code from encounter
+    Given the encounter is saved
+    And the diagnosis code A36.3 is removed from the encounter
+    When the encounter is saved again
+    Then I am notified that an existing encounter has been updated
+    And the notification contains an exact copy of the encounter
+
+
+  Scenario: Remove CPT code from encounter
+    Given the encounter is saved
+    And the procedure code 86960 is removed from the encounter
+    When the encounter is saved again
+    Then I am notified that an existing encounter has been updated
+    And the notification contains an exact copy of the encounter
