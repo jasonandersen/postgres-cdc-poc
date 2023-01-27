@@ -38,6 +38,16 @@ public class TypeConversion {
         return inputTransformer.transformToBean(input, Encounter.class);
     }
     
+    @DataTableType
+    public ProcedureCode procedureCode(Map<String, String> input) {
+        return inputTransformer.transformToBean(input, ProcedureCode.class);
+    }
+    
+    @DataTableType
+    public DiagnosisCode diagnosisCode(Map<String, String> input) {
+        return inputTransformer.transformToBean(input, DiagnosisCode.class);
+    }
+    
     @ParameterType(".*")
     public EncounterStatus encounterStatus(String input) {
         return EncounterStatus.valueOf(input);

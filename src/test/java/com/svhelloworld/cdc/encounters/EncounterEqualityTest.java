@@ -13,19 +13,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
- * Testing the equality and hashcode methods of the {@link com.svhelloworld.cdc.encounters.model.Encounter}.
+ * Testing the equals() and hashcode() methods of the {@link Encounter}.
  */
 public class EncounterEqualityTest {
     
     private static final Instant NOW = Instant.now();
     
-    private Encounter thisEncounter;
-    private Encounter thatEncounter;
+    private Encounter oneEncounter;
+    private Encounter twoEncounter;
     
     @BeforeEach
     public void setupEncounters() {
-        thisEncounter = buildEncounter();
-        thatEncounter = buildEncounter();
+        oneEncounter = buildEncounter();
+        twoEncounter = buildEncounter();
     }
     
     @Test
@@ -35,60 +35,60 @@ public class EncounterEqualityTest {
     
     @Test
     public void changeNotes() {
-        thatEncounter.setNotes("new note");
+        twoEncounter.setNotes("new note");
         assertInequality();
     }
     
     @Test
     public void changeStatus() {
-        thatEncounter.setStatus(EncounterStatus.IN_PROGRESS);
+        twoEncounter.setStatus(EncounterStatus.IN_PROGRESS);
         assertInequality();
     }
     
     @Test
     public void changePatientId() {
-        thatEncounter.setPatientId("NEW-PATIENT-ID");
+        twoEncounter.setPatientId("NEW-PATIENT-ID");
         assertInequality();
     }
     
     @Test
     public void addProcedure() {
-        thatEncounter.addProcedure(ProcedureCode.from("BLUE", "GREEN"));
+        twoEncounter.addProcedure(ProcedureCode.from("BLUE", "GREEN"));
         assertInequality();
     }
     
     @Test
     public void addDiagnosis() {
-        thatEncounter.addDiagnosis(DiagnosisCode.from("BLUE", "GREEN"));
+        twoEncounter.addDiagnosis(DiagnosisCode.from("BLUE", "GREEN"));
         assertInequality();
     }
     
     @Test
-    public void addRemoveProcedureCode() {
+    public void addThenRemoveProcedureCode() {
         ProcedureCode code = ProcedureCode.from("BLUE", "GREEN");
-        thatEncounter.addProcedure(code);
+        twoEncounter.addProcedure(code);
         assertInequality();
-        thatEncounter.getProcedureCodes().remove(code);
+        twoEncounter.getProcedureCodes().remove(code);
         assertEquality();
     }
     
     @Test
-    public void addRemoveDiagnosisCode() {
+    public void addThenRemoveDiagnosisCode() {
         DiagnosisCode code = DiagnosisCode.from("GREEN", "BLUE");
-        thatEncounter.addDiagnosis(code);
+        twoEncounter.addDiagnosis(code);
         assertInequality();
-        thatEncounter.getDiagnosisCodes().remove(code);
+        twoEncounter.getDiagnosisCodes().remove(code);
         assertEquality();
     }
     
     private void assertEquality() {
-        assertEquals(thisEncounter, thatEncounter);
-        assertEquals(thisEncounter.hashCode(), thatEncounter.hashCode());
+        assertEquals(oneEncounter, twoEncounter);
+        assertEquals(oneEncounter.hashCode(), twoEncounter.hashCode());
     }
     
     private void assertInequality() {
-        assertNotEquals(thisEncounter, thatEncounter);
-        assertNotEquals(thisEncounter, thatEncounter);
+        assertNotEquals(oneEncounter, twoEncounter);
+        assertNotEquals(oneEncounter, twoEncounter);
     }
     
     private Encounter buildEncounter() {

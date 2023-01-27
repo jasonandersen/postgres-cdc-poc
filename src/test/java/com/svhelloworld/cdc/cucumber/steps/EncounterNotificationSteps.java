@@ -52,12 +52,12 @@ public class EncounterNotificationSteps {
         targetEncounter = encounter;
     }
     
-    @Given("the encounter has these CPT codes")
+    @Given("the encounter has these CPT codes(:)")
     public void theEncounterHasTheseCPTCodes(List<ProcedureCode> cptCodes) {
         cptCodes.forEach(c -> targetEncounter.addProcedure(c));
     }
     
-    @Given("the encounter has these ICD codes:")
+    @Given("the encounter has these ICD codes(:)")
     public void theEncounterHasTheseICDCodes(List<DiagnosisCode> icdCodes) {
         icdCodes.forEach(c -> targetEncounter.addDiagnosis(c));
     }
@@ -128,6 +128,7 @@ public class EncounterNotificationSteps {
         Encounter receivedEncounter = mostRecentEventPayload();
         assertEquals(targetEncounter, receivedEncounter);
     }
+    
     
     /**
      * Wait for a specified amount of time for an event to show up from the event bus. Will return once an event is

@@ -1,3 +1,4 @@
+#
 # ====================================
 # Change Data Capture Proof of Concept
 # ====================================
@@ -14,20 +15,23 @@
 #     * Domain events are published to the world (in this PoC, we're just hard-coding the event publisher to the
 #       event consumer to proxy for something like EventBridge or SNS)
 #
+@encounter
 Feature: When an encounter is created or modified, we are notified of the changes
 
 
   Background:
     Given this new encounter that has not been saved
-      | PatientId                            | StatusName | Notes                |
-      | debbcd5e-98d4-11ed-a8fc-0242ac120002 | NEW        | Here are some notes. |
+      | Patient Id                           | Status name | Notes                |
+      | debbcd5e-98d4-11ed-a8fc-0242ac120002 | NEW         | Here are some notes. |
     And the encounter has these CPT codes
-      | 86931 |
-      | 86960 |
-      | 86985 |
-    And the encounter has these ICD codes:
-      | A36.3 |
-      | A36.1 |
+      | CPT code | Description                 |
+      | 86931    | Frozen blood thaw           |
+      | 86960    | Vol reduction of blood/prod |
+      | 86985    | Split blood or products     |
+    And the encounter has these ICD codes
+      | ICD code | Description               |
+      | A36.3    | Cutaneous diphtheria      |
+      | A36.1    | Nasopharyngeal diphtheria |
 
 
   Scenario: Save a new encounter
