@@ -11,6 +11,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -22,7 +24,7 @@ import java.util.Set;
  * Root of the Encounter aggregate.
  */
 @Entity
-@Table(name="encounters")
+@Table(name = "encounters")
 public class Encounter {
     
     @Id
@@ -170,13 +172,30 @@ public class Encounter {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Encounter)) return false;
-        Encounter encounter = (Encounter) o;
-        return getId() == encounter.getId();
+        
+        if (!(o instanceof Encounter encounter)) return false;
+    
+        return new EqualsBuilder()
+                .append(getId(), encounter.getId())
+                .append(getPatientId(), encounter.getPatientId())
+                .append(getStatus(), encounter.getStatus())
+                .append(getNotes(), encounter.getNotes())
+                .append(getProcedureCodes(), encounter.getProcedureCodes())
+                .append(getDiagnosisCodes(), encounter.getDiagnosisCodes())
+                .append(getCreatedOn(), encounter.getCreatedOn())
+                .isEquals();
     }
     
     @Override
     public int hashCode() {
-        return (int) (getId() ^ (getId() >>> 32));
+        return new HashCodeBuilder(17, 37)
+                .append(getId())
+                .append(getPatientId())
+                .append(getStatus())
+                .append(getNotes())
+                .append(getProcedureCodes())
+                .append(getDiagnosisCodes())
+                .append(getCreatedOn())
+                .toHashCode();
     }
 }

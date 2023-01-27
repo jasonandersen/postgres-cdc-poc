@@ -126,24 +126,7 @@ public class EncounterNotificationSteps {
     @Then("the notification contains an exact copy of the encounter")
     public void theNotificationContainsAnExactCopyOfTheEncounter() {
         Encounter receivedEncounter = mostRecentEventPayload();
-        deepCompareEncounters(targetEncounter, receivedEncounter);
-    }
-    
-    /*
-     * utility methods
-     */
-    
-    private void deepCompareEncounters(Encounter expected, Encounter actual) {
-        // TODO - this logic should really be in the Encounter.equals() method
-        assertEquals(expected.getId(), actual.getId(), "ID");
-        assertEquals(expected.getPatientId(), actual.getPatientId(), "Patient ID");
-        assertEquals(expected.getStatus(), actual.getStatus(), "Status");
-        assertEquals(expected.getNotes(), actual.getNotes(), "Notes");
-        // Created on fields aren't matching - this might actually be a defect.
-        //assertEquals(expected.getCreatedOn(), actual.getCreatedOn(), "Created On");
-        // note: updatedOn could be different between the two encounters
-        assertEquals(expected.getDiagnosisCodes(), actual.getDiagnosisCodes(), "Diagnosis Codes");
-        assertEquals(expected.getProcedureCodes(), actual.getProcedureCodes(), "Procedure Codes");
+        assertEquals(targetEncounter, receivedEncounter);
     }
     
     /**
