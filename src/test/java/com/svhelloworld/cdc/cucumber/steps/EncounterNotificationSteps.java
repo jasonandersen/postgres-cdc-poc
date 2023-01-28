@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,9 +36,9 @@ public class EncounterNotificationSteps {
      */
     private Encounter targetEncounter;
     /**
-     * The entity that comes back from the event notification of CRUD events.
+     * The notification event after the encounter is saved
      */
-    private Encounter encounterFromEvent;
+    private Event<Encounter> event;
     
     /**
      * Cucumber step definition classes are Spring managed beans with their own special life-cycle scope. All
@@ -121,9 +120,10 @@ public class EncounterNotificationSteps {
      */
     
     @When("the encounter is saved( again)")
-    public void theEncounterIsSaved() {
+    public void theEncounterIsSaved() throws InterruptedException {
         log.debug("Saving the target encounter");
         targetEncounter = encounterService.saveEncounter(targetEncounter);
+        event = fetchNotificationEvent();
     }
     
     /*
@@ -131,77 +131,69 @@ public class EncounterNotificationSteps {
      */
     
     @Then("I am notified that a new encounter has been created")
-    public void iAmNotifiedThatANewEncounterHasBeenCreated() throws InterruptedException {
-        int startingEventCount = eventsConsumer.numberEventsReceived();
-        waitForEvent();
-        assertEquals(startingEventCount + 1, eventsConsumer.numberEventsReceived());
-        encounterFromEvent = mostRecentEventPayload();
+    public void iAmNotifiedThatANewEncounterHasBeenCreated() {
+        assertNotNull(event, "Did not receive a notification event.");
     }
     
     @Then("I am notified that an existing encounter has been updated")
-    public void iAmNotifiedThatAnExistingEncounterHasBeenUpdated() throws InterruptedException {
+    public void iAmNotifiedThatAnExistingEncounterHasBeenUpdated() {
         this.iAmNotifiedThatANewEncounterHasBeenCreated();
     }
     
     @Then("the notification contains a matching copy of the encounter")
     public void theNotificationContainsAnExactCopyOfTheEncounter() {
-        assertEquals(targetEncounter, encounterFromEvent);
+        assertEquals(targetEncounter, event.getBody());
     }
     
     @Then("the encounter in the notification contains the diagnosis code [{diagnosisCode}]")
     public void theEncounterInTheNotificationContainsTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
-        assertTrue(encounterFromEvent.getDiagnosisCodes().contains(diagnosisCode));
+        assertTrue(event.getBody().getDiagnosisCodes().contains(diagnosisCode));
     }
     
     @Then("the encounter in the notification contains the procedure code [{procedureCode}]")
     public void theEncounterInTheNotificationContainsTheProcedureCode(ProcedureCode procedureCode) {
-        assertTrue(encounterFromEvent.getProcedureCodes().contains(procedureCode));
+        assertTrue(event.getBody().getProcedureCodes().contains(procedureCode));
     }
     
     @Then("the encounter in the notification does not contain the diagnosis code [{diagnosisCode}]")
     public void theEncounterInTheNotificationDoesNotContainTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
-        assertFalse(encounterFromEvent.getDiagnosisCodes().contains(diagnosisCode));
+        assertFalse(event.getBody().getDiagnosisCodes().contains(diagnosisCode));
     }
     
     @Then("the encounter in the notification does not contain the procedure code [{procedureCode}]")
     public void theEncounterInTheNotificationDoesNotContainTheProcedureCode(ProcedureCode procedureCode) {
-        assertFalse(encounterFromEvent.getProcedureCodes().contains(procedureCode));
+        assertFalse(event.getBody().getProcedureCodes().contains(procedureCode));
     }
     
     @Then("the notes of the encounter in the notification is {string}")
     public void theNotesOfTheEncounterInTheNotificationIs(String notes) {
-        assertEquals(notes, encounterFromEvent.getNotes());
+        assertEquals(notes, event.getBody().getNotes());
     }
     
     @Then("the status of the encounter in the notification is [{encounterStatus}]")
     public void theStatusOfTheEncounterInTheNotificationIs(EncounterStatus encounterStatus) {
-        assertEquals(encounterStatus, encounterFromEvent.getStatus());
+        assertEquals(encounterStatus, event.getBody().getStatus());
     }
     
     /**
      * Wait for a specified amount of time for an event to show up from the event bus. Will return once an event is
      * received or the specified EVENT_WAIT_TIME has passed.
+     * @throws IllegalArgumentException when no event is caught
      */
     @SuppressWarnings("BusyWait")
-    private void waitForEvent() throws InterruptedException {
-        log.debug("Waiting for event. Events received: {}", eventsConsumer.numberEventsReceived());
+    private Event<Encounter> fetchNotificationEvent() throws InterruptedException {
+        event = null;
         long startTime = System.currentTimeMillis();
         int startingEventCount = eventsConsumer.numberEventsReceived();
         while (System.currentTimeMillis() - startTime < EVENT_WAIT_TIME &&
                 eventsConsumer.numberEventsReceived() == startingEventCount) {
             Thread.sleep(200);
         }
-        log.debug("Finished waiting for event. Events received: {}", eventsConsumer.mostRecentEvent());
-    }
-    
-    /**
-     * Fetch the most recent event and grab the encounter out of the event payload
-     */
-    private Encounter mostRecentEventPayload() {
-        Optional<Event<Encounter>> event = eventsConsumer.mostRecentEvent();
-        return event
-                .orElseThrow(IllegalArgumentException::new)
-                .getBody();
+        if (startingEventCount < eventsConsumer.numberEventsReceived()) {
+            return eventsConsumer.mostRecentEvent().orElseThrow(IllegalArgumentException::new);
+        } else {
+            throw new IllegalArgumentException("Event was never received.");
+        }
     }
     
     private void assertAllOutboxEntriesAreResolved() {
