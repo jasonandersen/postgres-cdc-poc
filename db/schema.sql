@@ -217,7 +217,7 @@ EXECUTE PROCEDURE fn_encounters_updated_on_trigger();
 -- Outbox triggers
 ----------------------------------
 
-CREATE OR REPLACE FUNCTION fn_encounters_outbox_trigger()
+CREATE OR REPLACE FUNCTION fn_encounters_outbox_upsert_trigger()
     RETURNS trigger AS
 $$
 BEGIN
@@ -227,20 +227,42 @@ END;
 $$
     LANGUAGE 'plpgsql';
 
+CREATE OR REPLACE FUNCTION fn_encounters_outbox_delete_trigger()
+    RETURNS trigger AS
+$$
+BEGIN
+    INSERT INTO encounters_outbox (encounter_id) VALUES (OLD."encounter_id");
+    RETURN NEW;
+END;
+$$
+    LANGUAGE 'plpgsql';
+
 CREATE TRIGGER encounters_trigger
     AFTER INSERT OR UPDATE
     ON "encounters"
     FOR EACH ROW
-EXECUTE PROCEDURE fn_encounters_outbox_trigger();
+EXECUTE PROCEDURE fn_encounters_outbox_upsert_trigger();
 
-CREATE TRIGGER encounter_dx_trigger
+CREATE TRIGGER encounter_dx_upsert_trigger
     AFTER INSERT OR UPDATE
     ON "encounter_dx"
     FOR EACH ROW
-EXECUTE PROCEDURE fn_encounters_outbox_trigger();
+EXECUTE PROCEDURE fn_encounters_outbox_upsert_trigger();
 
-CREATE TRIGGER encounter_procedures_trigger
+CREATE TRIGGER encounter_dx_delete_trigger
+    AFTER DELETE
+    ON "encounter_dx"
+    FOR EACH ROW
+EXECUTE PROCEDURE fn_encounters_outbox_delete_trigger();
+
+CREATE TRIGGER encounter_procedures_upsert_trigger
     AFTER INSERT OR UPDATE
     ON "encounter_procedures"
     FOR EACH ROW
-EXECUTE PROCEDURE fn_encounters_outbox_trigger();
+EXECUTE PROCEDURE fn_encounters_outbox_upsert_trigger();
+
+CREATE TRIGGER encounter_procedures_delete_trigger
+    AFTER DELETE
+    ON "encounter_procedures"
+    FOR EACH ROW
+EXECUTE PROCEDURE fn_encounters_outbox_delete_trigger();
