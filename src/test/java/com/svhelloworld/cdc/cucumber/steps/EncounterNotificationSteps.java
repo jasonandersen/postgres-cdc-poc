@@ -57,20 +57,13 @@ public class EncounterNotificationSteps {
     @Before
     public void setupScenario(Scenario scenario) {
         log.info("Test scenario: [{}] START", scenario.getName());
-        
-        // assert that we have no outstanding outbox entries before we start the test
         assertAllOutboxEntriesAreResolved();
-        
-        // make sure no events carry over from previous test scenarios
-        log.debug("Clearing {} events prior to executing test scenario", eventsConsumer.numberEventsReceived());
         eventsConsumer.clearEvents();
     }
     
     @After
     public void teardownScenario(Scenario scenario) {
-        // assert that we have no outstanding outbox entries that will carry over into the next test
         assertAllOutboxEntriesAreResolved();
-        
         log.info("Test scenario: [{}] {}", scenario.getName(), scenario.getStatus());
     }
     
@@ -78,7 +71,7 @@ public class EncounterNotificationSteps {
      * GIVEN step definitions
      */
     
-    @Given("this new encounter that has not been saved")
+    @Given("a new encounter that has not been saved")
     public void aNewEncounter(Encounter encounter) {
         targetEncounter = encounter;
     }
@@ -150,7 +143,7 @@ public class EncounterNotificationSteps {
         this.iAmNotifiedThatANewEncounterHasBeenCreated();
     }
     
-    @Then("the notification contains an exact copy of the encounter")
+    @Then("the notification contains a matching copy of the encounter")
     public void theNotificationContainsAnExactCopyOfTheEncounter() {
         assertEquals(targetEncounter, encounterFromEvent);
     }
@@ -189,6 +182,7 @@ public class EncounterNotificationSteps {
      * Wait for a specified amount of time for an event to show up from the event bus. Will return once an event is
      * received or the specified EVENT_WAIT_TIME has passed.
      */
+    @SuppressWarnings("BusyWait")
     private void waitForEvent() throws InterruptedException {
         log.debug("Waiting for event. Events received: {}", eventsConsumer.numberEventsReceived());
         long startTime = System.currentTimeMillis();
@@ -205,7 +199,7 @@ public class EncounterNotificationSteps {
      */
     private Encounter mostRecentEventPayload() {
         Optional<Event<Encounter>> event = eventsConsumer.mostRecentEvent();
-        return (Encounter) event
+        return event
                 .orElseThrow(IllegalArgumentException::new)
                 .getBody();
     }

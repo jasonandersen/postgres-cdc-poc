@@ -20,7 +20,7 @@ Feature: When an encounter is created or modified, we are notified of the change
 
 
   Background:
-    Given this new encounter that has not been saved
+    Given a new encounter that has not been saved
       | Status name | Notes                | Patient Id                           |
       | NEW         | Here are some notes. | debbcd5e-98d4-11ed-a8fc-0242ac120002 |
     And the encounter has these CPT codes
@@ -37,7 +37,7 @@ Feature: When an encounter is created or modified, we are notified of the change
   Scenario: Save a new encounter
     When the encounter is saved
     Then I am notified that a new encounter has been created
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
 
 
   Scenario: Update existing encounter with a new status
@@ -45,7 +45,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the encounter status is set to [IN_PROGRESS]
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
     And the status of the encounter in the notification is [IN_PROGRESS]
 
 
@@ -54,7 +54,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the encounter notes is updated to "I changed the notes to this value."
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
     And the notes of the encounter in the notification is "I changed the notes to this value."
 
 
@@ -63,7 +63,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the diagnosis code [A36.0] is added to the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
     And the encounter in the notification contains the diagnosis code [A36.0]
 
 
@@ -72,8 +72,19 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the procedure code [86932] is added to the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
     And the encounter in the notification contains the procedure code [86932]
+
+
+  Scenario: Add multiple CPT codes to encounter
+    Given the encounter is saved
+    And the procedure code [86932] is added to the encounter
+    And the procedure code [86152] is added to the encounter
+    When the encounter is saved again
+    Then I am notified that an existing encounter has been updated
+    And the notification contains a matching copy of the encounter
+    And the encounter in the notification contains the procedure code [86932]
+    And the encounter in the notification contains the procedure code [86152]
 
 
   Scenario: Remove DX code from encounter
@@ -81,7 +92,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the diagnosis code [A36.3] is removed from the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
     And the encounter in the notification does not contain the diagnosis code [A36.3]
 
 
@@ -90,5 +101,5 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the procedure code [86960] is removed from the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
-    And the notification contains an exact copy of the encounter
+    And the notification contains a matching copy of the encounter
     And the encounter in the notification does not contain the procedure code [86960]
