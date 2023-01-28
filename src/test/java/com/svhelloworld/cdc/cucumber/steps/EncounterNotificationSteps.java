@@ -54,18 +54,23 @@ public class EncounterNotificationSteps {
         log.debug("Change data capture step definitions instantiated.");
     }
     
-    /**
-     * Events can persist between test scenarios, so we need to clean them up before each one.
-     */
     @Before
     public void setupScenario(Scenario scenario) {
         log.info("Test scenario: [{}] START", scenario.getName());
+        
+        // assert that we have no outstanding outbox entries before we start the test
+        assertAllOutboxEntriesAreResolved();
+        
+        // make sure no events carry over from previous test scenarios
         log.debug("Clearing {} events prior to executing test scenario", eventsConsumer.numberEventsReceived());
         eventsConsumer.clearEvents();
     }
     
     @After
     public void teardownScenario(Scenario scenario) {
+        // assert that we have no outstanding outbox entries that will carry over into the next test
+        assertAllOutboxEntriesAreResolved();
+        
         log.info("Test scenario: [{}] {}", scenario.getName(), scenario.getStatus());
     }
     
@@ -145,12 +150,6 @@ public class EncounterNotificationSteps {
         this.iAmNotifiedThatANewEncounterHasBeenCreated();
     }
     
-    @Then("all outstanding notifications have been resolved")
-    public void allEncounterOutboxEntriesHaveBeenResolved() {
-        List<EncounterOutboxEntry> entries = encounterService.getUnresolvedOutboxEntries();
-        assertTrue(entries.isEmpty());
-    }
-    
     @Then("the notification contains an exact copy of the encounter")
     public void theNotificationContainsAnExactCopyOfTheEncounter() {
         assertEquals(targetEncounter, encounterFromEvent);
@@ -209,5 +208,12 @@ public class EncounterNotificationSteps {
         return (Encounter) event
                 .orElseThrow(IllegalArgumentException::new)
                 .getBody();
+    }
+    
+    private void assertAllOutboxEntriesAreResolved() {
+        List<EncounterOutboxEntry> entries = encounterService.getUnresolvedOutboxEntries();
+        assertTrue(entries.isEmpty(),
+                "Expected no UNRESOLVED encounter outbox entries but found " + entries.size() +
+                        "  UNRESOLVED outbox entries");
     }
 }
