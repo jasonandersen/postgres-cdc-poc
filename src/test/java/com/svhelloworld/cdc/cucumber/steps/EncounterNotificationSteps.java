@@ -145,7 +145,7 @@ public class EncounterNotificationSteps {
         this.iAmNotifiedThatANewEncounterHasBeenCreated();
     }
     
-    @Then("all encounter outbox entries have been resolved")
+    @Then("all outstanding notifications have been resolved")
     public void allEncounterOutboxEntriesHaveBeenResolved() {
         List<EncounterOutboxEntry> entries = encounterService.getUnresolvedOutboxEntries();
         assertTrue(entries.isEmpty());
