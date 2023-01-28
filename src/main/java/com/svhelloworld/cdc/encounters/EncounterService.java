@@ -24,6 +24,7 @@ public class EncounterService {
     /**
      * How frequently we should be polling the encounters outbox to find data updates. Normally, we'd configure
      * this as part of application.properties but that isn't compatible with the @Scheduled annotation.
+     * Set in milliseconds.
      */
     private static final int OUTBOX_POLLING_FREQUENCY = 1000;
     
@@ -56,7 +57,7 @@ public class EncounterService {
         log.debug("Polling encounters outbox");
         EncounterOutboxBatch batch = new EncounterOutboxBatch(encounterDao, outboxEntryDao, eventPublisher);
         if (batch.entriesArePresent()) {
-            batch.commit();
+            batch.publishAndResolve();
         }
     }
     

@@ -59,7 +59,7 @@ public class EncounterOutboxBatch {
      * Publishes events to notify consumers about the data changes and then marks the outbox entries as RESOLVED.
      */
     @Transactional
-    public void commit() {
+    public void publishAndResolve() {
         // We need to make sure that resolving the outbox entries in the database and publishing events
         // are both considered to be part of the same atomic transaction. They MUST succeed or fail together.
         // Worst possible scenario is that the database is updated but events don't get published. That will

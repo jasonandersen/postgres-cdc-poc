@@ -31,6 +31,6 @@ public class EncounterOutboxDaoTest {
         List<EncounterOutboxEntry> entries = dao.findByStatus(OutboxStatus.UNRESOLVED);
         assertNotNull(entries);
         assertFalse(entries.isEmpty());
-        entries.forEach(e -> log.info("Outbox entry: {}", e));
+        entries.forEach(e -> log.debug("Outbox entry: {}", e));
     }
 }

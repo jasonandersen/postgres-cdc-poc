@@ -32,7 +32,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100.0, bean.getCurrencyValue(), DELTA);
         assertEquals(80.0, bean.getPercentile(), DELTA);
         assertEquals("Joe", bean.getFirstName());
@@ -51,7 +51,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100.0, bean.getCurrencyValue(), DELTA);
         assertEquals(80.5, bean.getPercentile(), DELTA);
         assertEquals("Joe", bean.getFirstName());
@@ -69,7 +69,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100.0, bean.getCurrencyValue(), DELTA);
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
@@ -86,7 +86,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100000.0, bean.getCurrencyValue(), DELTA);
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
@@ -103,7 +103,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100000.0, bean.getCurrencyValue(), DELTA);
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
@@ -120,7 +120,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100000.75, bean.getCurrencyValue(), DELTA);
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
@@ -137,7 +137,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(100.75, bean.getCurrencyValue(), DELTA);
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
@@ -154,7 +154,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals(0, bean.getCurrencyValue(), DELTA);
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
@@ -170,7 +170,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
         assertEquals(49, bean.getAge());
@@ -185,7 +185,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
         assertEquals(49, bean.getAge());
@@ -200,7 +200,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
         assertEquals(49, bean.getAge());
@@ -215,7 +215,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
         assertEquals(49, bean.getAge());
@@ -230,7 +230,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
         assertEquals(49, bean.getAge());
@@ -245,7 +245,7 @@ public class InputTransformerTest {
 
         TestBean bean = transformer.transformToBean(properties, TestBean.class);
 
-        log.info("Transformed bean: {}", bean.toString());
+        log.debug("Transformed bean: {}", bean.toString());
         assertEquals("Joe", bean.getFirstName());
         assertEquals("Andersen", bean.getLastName());
         assertEquals(49, bean.getAge());

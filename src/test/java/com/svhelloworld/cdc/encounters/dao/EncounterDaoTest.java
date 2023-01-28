@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,7 +42,6 @@ public class EncounterDaoTest {
     
     @Test
     void createdOnIsTriggered() {
-        Instant startTime = Instant.now();
         Encounter original = buildEncounter();
         assertNull(original.getCreatedOn());
         

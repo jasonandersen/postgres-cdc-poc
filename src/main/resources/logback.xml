@@ -9,8 +9,7 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="com.svhelloworld" level="DEBUG" />
-    <logger name="org.hibernate" level="INFO" />
-    <logger name="org.springframework" level="INFO" />
-    <logger name="com.google.common.eventbus" level="DEBUG" />
+    <logger name="com.svhelloworld" level="INFO" />
+    <logger name="org.hibernate" level="WARN" />
+    <logger name="org.springframework" level="WARN" />
 </configuration>
