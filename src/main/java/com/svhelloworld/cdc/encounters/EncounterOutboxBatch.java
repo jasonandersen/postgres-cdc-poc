@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * A batch of unresolved {@link EncounterOutboxEntry}s to turn into {@link Event}s.
@@ -104,13 +103,10 @@ public class EncounterOutboxBatch {
      * timestamp from the most recent entry.
      */
     private EncounterOutboxEntry findMostRecentOutboxEntry(List<EncounterOutboxEntry> outboxEntries) {
-        Optional<EncounterOutboxEntry> result = outboxEntries
+        return outboxEntries
                 .stream()
-                .max(Comparator.comparing(EncounterOutboxEntry::getCreatedOn));
-        if (result.isPresent()) {
-            return result.get();
-        }
-        throw new IllegalArgumentException("No outbox entries were discovered.");
+                .max(Comparator.comparing(EncounterOutboxEntry::getCreatedOn))
+                .orElseThrow(IllegalArgumentException::new);
     }
     
     /**

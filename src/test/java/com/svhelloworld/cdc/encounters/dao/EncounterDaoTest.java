@@ -46,39 +46,31 @@ public class EncounterDaoTest {
         Instant startTime = Instant.now();
         Encounter original = buildEncounter();
         assertNull(original.getCreatedOn());
-    
+        
         original = encounterDao.save(original);
-    
+        
         Optional<Encounter> result = encounterDao.findById(original.getId());
-        if (result.isPresent()) {
-            Encounter saved = result.get();
-            assertNotNull(saved.getCreatedOn());
-            assertNotNull(saved.getUpdatedOn());
-        } else {
-            fail("Encounter not found");
-        }
+        Encounter saved = result.orElseThrow(IllegalArgumentException::new);
+        assertNotNull(saved.getCreatedOn());
+        assertNotNull(saved.getUpdatedOn());
     }
     
     @Test
     void modifyStatus() {
         // save as NEW encounter
         Encounter newEncounter = buildEncounter();
-        Encounter savedEncounter = encounterDao.save(newEncounter);
+        Encounter savedEncounter = saveEncounter(newEncounter);
         assertEquals(EncounterStatus.NEW, savedEncounter.getStatus());
         
         // update to IN_PROGRESS
         savedEncounter.setStatus(EncounterStatus.IN_PROGRESS);
-        Encounter updatedEncounter = encounterDao.save(savedEncounter);
-    
-        // assert results
-        Optional<Encounter> result = encounterDao.findById(updatedEncounter.getId());
-        if (result.isPresent()) {
-            Encounter reloadedEncounter = result.get();
-            assertEquals(EncounterStatus.IN_PROGRESS, reloadedEncounter.getStatus());
-        } else {
-            fail(); // shouldn't get to here
-        }
+        Encounter updatedEncounter = saveEncounter(savedEncounter);
         
+        // assert results
+        Encounter result = encounterDao
+                .findById(updatedEncounter.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        assertEquals(EncounterStatus.IN_PROGRESS, result.getStatus());
     }
     
     @Test
@@ -89,17 +81,14 @@ public class EncounterDaoTest {
         // save encounter
         Encounter savedEncounter = encounterDao.save(newEncounter);
         // re-load encounter from database
-        Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
-        if (result.isPresent()) {
-            // assert results
-            Encounter retrievedEncounter = result.get();
-            assertEquals(1, retrievedEncounter.getProcedureCodes().size());
-            ProcedureCode procedureCode = retrievedEncounter.getProcedureCodes().iterator().next();
-            assertEquals("86930", procedureCode.getCptCode());
-            assertEquals("Frozen blood prep", procedureCode.getDescription());
-        } else {
-            fail("Encounter was not found in the database.");
-        }
+        Encounter retrievedEncounter = encounterDao
+                .findById(savedEncounter.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        // assert results
+        assertEquals(1, retrievedEncounter.getProcedureCodes().size());
+        ProcedureCode procedureCode = retrievedEncounter.getProcedureCodes().iterator().next();
+        assertEquals("86930", procedureCode.getCptCode());
+        assertEquals("Frozen blood prep", procedureCode.getDescription());
     }
     
     @Test
@@ -110,17 +99,14 @@ public class EncounterDaoTest {
         // save encounter
         Encounter savedEncounter = encounterDao.save(newEncounter);
         // re-load encounter from database
-        Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
-        if (result.isPresent()) {
-            // assert results
-            Encounter retrievedEncounter = result.get();
-            assertEquals(1, retrievedEncounter.getDiagnosisCodes().size());
-            DiagnosisCode diagnosisCode = retrievedEncounter.getDiagnosisCodes().iterator().next();
-            assertEquals("A36.3", diagnosisCode.getIcdCode());
-            assertEquals("Cutaneous diphtheria", diagnosisCode.getDescription());
-        } else {
-            fail("Encounter was not found in the database");
-        }
+        Encounter retrievedEncounter = encounterDao
+                .findById(savedEncounter.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        // assert results
+        assertEquals(1, retrievedEncounter.getDiagnosisCodes().size());
+        DiagnosisCode diagnosisCode = retrievedEncounter.getDiagnosisCodes().iterator().next();
+        assertEquals("A36.3", diagnosisCode.getIcdCode());
+        assertEquals("Cutaneous diphtheria", diagnosisCode.getDescription());
     }
     
     @Test
@@ -134,15 +120,16 @@ public class EncounterDaoTest {
         // save encounter
         Encounter savedEncounter = encounterDao.save(newEncounter);
         // re-load encounter from database
-        Optional<Encounter> result = encounterDao.findById(savedEncounter.getId());
-        if (result.isPresent()) {
-            // assert results
-            Encounter retrievedEncounter = result.get();
-            assertEquals(2, retrievedEncounter.getProcedureCodes().size());
-            assertEquals(2, retrievedEncounter.getDiagnosisCodes().size());
-        } else {
-            fail("Encounter was not found in the database");
-        }
+        Encounter retrievedEncounter = encounterDao
+                .findById(savedEncounter.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        assertEquals(2, retrievedEncounter.getProcedureCodes().size());
+        assertEquals(2, retrievedEncounter.getDiagnosisCodes().size());
+    }
+    
+    private Encounter saveEncounter(Encounter encounter) {
+        Encounter saved = encounterDao.save(encounter);
+        return encounterDao.findById(saved.getId()).orElseThrow(IllegalArgumentException::new);
     }
     
     private Encounter buildEncounter() {

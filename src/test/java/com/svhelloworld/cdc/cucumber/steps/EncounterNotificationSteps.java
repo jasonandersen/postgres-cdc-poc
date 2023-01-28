@@ -159,10 +159,8 @@ public class EncounterNotificationSteps {
      */
     private Encounter mostRecentEventPayload() {
         Optional<Event> event = eventsConsumer.mostRecentEvent();
-        if (event.isPresent()) {
-            Event mostRecent = event.get();
-            return (Encounter) mostRecent.getBody();
-        }
-        throw new IllegalArgumentException("Encounter in event was not found.");
+        return (Encounter) event
+                .orElseThrow(IllegalArgumentException::new)
+                .getBody();
     }
 }
