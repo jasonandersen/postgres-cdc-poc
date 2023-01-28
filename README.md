@@ -23,4 +23,4 @@ As strings are pulled out of the feature files and passed into the step definiti
 This is a standard Maven project. All JUnit tests and Cucumber tests can be executed from a standard `mvn clean test` command. The database is required to execute the tests.
 
 #### Database
-The database is run from the `docker-compose.yml` file in the project root. The schema is built from the `db/schema.sql` file. The schema will be executed directly from the `docker-compose.yml` file.
+The database is run from the `docker-compose.yml` file in the project root. The schema is built from the `db/schema.sql` file. The schema will be executed directly from the `docker-compose.yml` file. The postgres database files are stored in `./db/postgres-data` directory. If you want to reset the database, delete this directory and postgres will re-execute the `schema.sql` file to rebuild the schema from scratch.
