@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 public class EncounterEqualityTest {
     
-    private static final Instant NOW = Instant.now();
+    private static final Instant TIMESTAMP = Instant.now();
     
     private Encounter oneEncounter;
     private Encounter twoEncounter;
@@ -26,10 +26,6 @@ public class EncounterEqualityTest {
     public void setupEncounters() {
         oneEncounter = buildEncounter();
         twoEncounter = buildEncounter();
-    }
-    
-    @Test
-    public void equals() {
         assertEquality();
     }
     
@@ -88,13 +84,13 @@ public class EncounterEqualityTest {
     
     private void assertInequality() {
         assertNotEquals(oneEncounter, twoEncounter);
-        assertNotEquals(oneEncounter, twoEncounter);
+        assertNotEquals(oneEncounter.hashCode(), twoEncounter.hashCode());
     }
     
     private Encounter buildEncounter() {
         Encounter encounter = new Encounter();
         
-        encounter.setCreatedOn(NOW);
+        encounter.setCreatedOn(TIMESTAMP);
         encounter.setId(12345);
         encounter.setNotes("foo bar");
         encounter.setStatus(EncounterStatus.NEW);

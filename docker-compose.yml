@@ -6,7 +6,7 @@ services:
     image: postgres:12.9
     restart: always
     environment:
-      POSTGRES_USER: jason
+      POSTGRES_USER: cdc
       POSTGRES_PASSWORD: cdcpoc
       POSTGRES_DB: cdc-poc
     ports:

@@ -175,7 +175,7 @@ ON CONFLICT DO NOTHING;
 
 
 ----------------------------------
--- Created on triggers
+-- created_on triggers
 ----------------------------------
 CREATE OR REPLACE FUNCTION fn_encounters_insert_trigger()
     RETURNS trigger AS
@@ -195,7 +195,7 @@ CREATE TRIGGER encounters_insert_trigger
 EXECUTE PROCEDURE fn_encounters_insert_trigger();
 
 ----------------------------------
--- Updated on triggers
+-- updated_on triggers
 ----------------------------------
 CREATE OR REPLACE FUNCTION fn_encounters_updated_on_trigger()
     RETURNS trigger AS
