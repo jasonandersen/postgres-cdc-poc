@@ -11,6 +11,7 @@ import com.svhelloworld.cdc.encounters.model.ProcedureCode;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Glue code to execute steps defined in the Cucumber step definition files.
+ * Glue code to execute steps defined in the Cucumber feature files.
  */
 public class EncounterNotificationSteps {
     
@@ -41,6 +42,14 @@ public class EncounterNotificationSteps {
         this.encounterService = encounterService;
         this.eventsConsumer = eventsConsumer;
         log.info("Change data capture step definitions instantiated.");
+    }
+    
+    /**
+     * Events can persist between test scenarios, so we need to clean them up before each one.
+     */
+    @BeforeEach
+    public void clearEvents() {
+        eventsConsumer.clearEvents();
     }
     
     /*

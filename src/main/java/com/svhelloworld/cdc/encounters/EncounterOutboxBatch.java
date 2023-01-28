@@ -1,11 +1,13 @@
 package com.svhelloworld.cdc.encounters;
 
 import com.svhelloworld.cdc.Event;
+import com.svhelloworld.cdc.EventPublisher;
 import com.svhelloworld.cdc.encounters.dao.EncounterDao;
 import com.svhelloworld.cdc.encounters.dao.EncounterOutboxEntryDao;
 import com.svhelloworld.cdc.encounters.model.Encounter;
 import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
 import com.svhelloworld.cdc.encounters.model.OutboxStatus;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,16 +28,19 @@ public class EncounterOutboxBatch {
     
     private final EncounterDao encounterDao;
     private final EncounterOutboxEntryDao outboxEntryDao;
+    private final EventPublisher eventPublisher;
     private final List<EncounterOutboxEntry> entries;
     private final Map<Long, List<EncounterOutboxEntry>> entriesById;
     
     public EncounterOutboxBatch(
             EncounterDao encounterDao,
-            EncounterOutboxEntryDao outboxEntryDao) {
+            EncounterOutboxEntryDao outboxEntryDao,
+            EventPublisher eventPublisher) {
         
         this.encounterDao = encounterDao;
         this.outboxEntryDao = outboxEntryDao;
         this.entries = outboxEntryDao.findByStatus(OutboxStatus.UNRESOLVED);
+        this.eventPublisher = eventPublisher;
         this.entriesById = entriesById();
         if (entriesArePresent()) {
             log.debug("{} encounter mutations discovered.", entriesById.size());
@@ -52,16 +57,23 @@ public class EncounterOutboxBatch {
     }
     
     /**
-     * @return the number of unresolved outbox entries discovered
+     * Publishes events to notify consumers about the data changes and then marks the outbox entries as RESOLVED.
      */
-    public int numberOfEntries() {
-        return entries.size();
+    @Transactional
+    public void commit() {
+        // We need to make sure that resolving the outbox entries in the database and publishing events
+        // are both considered to be part of the same atomic transaction. They MUST succeed or fail together.
+        // Worst possible scenario is that the database is updated but events don't get published. That will
+        // put our system in an incorrect state.
+        resolveOutboxEntries();
+        eventPublisher.publish(getEvents());
     }
     
     /**
-     * @return a list of {@link Event}s constructed from {@link EncounterOutboxEntry}s and {@link Encounter}s.
+     * @return a list of {@link Event}s constructed from {@link EncounterOutboxEntry}s and {@link Encounter}s. Will
+     *         not return null but can return an empty list.
      */
-    public List<Event<Encounter>> getEvents() {
+    private List<Event<Encounter>> getEvents() {
         List<Event<Encounter>> events = new LinkedList<>();
         if (entriesArePresent()) {
             Iterable<Encounter> encounters = encounterDao.findAllById(entriesById.keySet());
@@ -76,7 +88,7 @@ public class EncounterOutboxBatch {
     /**
      * Mark all the unresolved entries as RESOLVED.
      */
-    public void resolveOutboxEntries() {
+    private void resolveOutboxEntries() {
         entries.forEach(e -> e.setStatus(OutboxStatus.RESOLVED));
         outboxEntryDao.saveAll(entries);
         log.debug("Marked {} outbox entries as RESOLVED", entries.size());

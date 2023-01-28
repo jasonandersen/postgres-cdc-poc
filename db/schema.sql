@@ -41,11 +41,11 @@ CREATE TABLE IF NOT EXISTS encounter_status
 CREATE TABLE IF NOT EXISTS encounters
 (
     encounter_id        SERIAL PRIMARY KEY,
-    patient_id          VARCHAR(255)               NOT NULL,
-    encounter_status_id SMALLINT                   NOT NULL,
-    notes               VARCHAR(255) DEFAULT 0     NOT NULL,
-    created_on          TIMESTAMP    DEFAULT NOW() NOT NULL,
-    updated_on          TIMESTAMP    DEFAULT NOW() NOT NULL,
+    patient_id          VARCHAR(255)            NOT NULL,
+    encounter_status_id SMALLINT                NOT NULL,
+    notes               VARCHAR(255)            NOT NULL,
+    created_on          TIMESTAMP DEFAULT NOW() NOT NULL,
+    updated_on          TIMESTAMP DEFAULT NOW() NOT NULL,
     CONSTRAINT fk_encounters_encounter_status FOREIGN KEY (encounter_status_id) REFERENCES encounter_status (encounter_status_id)
 );
 
@@ -175,9 +175,43 @@ ON CONFLICT DO NOTHING;
 
 
 ----------------------------------
--- Outbox trigger
+-- Created on triggers
 ----------------------------------
+CREATE OR REPLACE FUNCTION fn_encounters_insert_trigger()
+    RETURNS trigger AS
+$$
+BEGIN
+    NEW."created_on" = NOW();
+    NEW."updated_on" = NOW();
+    RETURN NEW;
+END;
+$$
+    LANGUAGE 'plpgsql';
 
+CREATE TRIGGER encounters_insert_trigger
+    BEFORE INSERT
+    ON "encounters"
+    FOR EACH ROW
+EXECUTE PROCEDURE fn_encounters_insert_trigger();
+
+----------------------------------
+-- Updated on triggers
+----------------------------------
+CREATE OR REPLACE FUNCTION fn_encounters_updated_on_trigger()
+    RETURNS trigger AS
+$$
+BEGIN
+    NEW."updated_on" = NOW();
+    RETURN NEW;
+END;
+$$
+    LANGUAGE 'plpgsql';
+
+CREATE TRIGGER encounters_update_trigger
+    BEFORE UPDATE
+    ON "encounters"
+    FOR EACH ROW
+EXECUTE PROCEDURE fn_encounters_updated_on_trigger();
 
 ----------------------------------
 -- Outbox triggers
@@ -188,8 +222,6 @@ CREATE OR REPLACE FUNCTION fn_encounters_outbox_trigger()
 $$
 BEGIN
     INSERT INTO encounters_outbox (encounter_id) VALUES (NEW."encounter_id");
-    -- DO SOME STUFF
-
     RETURN NEW;
 END;
 $$

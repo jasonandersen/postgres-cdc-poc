@@ -62,10 +62,10 @@ public class Encounter {
     private Set<DiagnosisCode> diagnosisCodes;
     
     @Column(name = "created_on")
-    private Instant createdOn = Instant.now();
+    private Instant createdOn;
     
     @Column(name = "updated_on")
-    private Instant updatedOn = Instant.now();
+    private Instant updatedOn;
     
     public long getId() {
         return id;

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,13 +34,29 @@ public class EncounterDaoTest {
     @Test
     void saveWithNoProcedureOrDxCodes() {
         long originalCount = encounterDao.count();
-        log.info("{} rows in encounter table", originalCount);
         
         encounterDao.save(buildEncounter());
         
         long newCount = encounterDao.count();
-        log.info("{} rows in encounter table after save", newCount);
         assertEquals(originalCount + 1, newCount);
+    }
+    
+    @Test
+    void createdOnIsTriggered() {
+        Instant startTime = Instant.now();
+        Encounter original = buildEncounter();
+        assertNull(original.getCreatedOn());
+    
+        original = encounterDao.save(original);
+    
+        Optional<Encounter> result = encounterDao.findById(original.getId());
+        if (result.isPresent()) {
+            Encounter saved = result.get();
+            assertNotNull(saved.getCreatedOn());
+            assertNotNull(saved.getUpdatedOn());
+        } else {
+            fail("Encounter not found");
+        }
     }
     
     @Test

@@ -21,8 +21,8 @@ Feature: When an encounter is created or modified, we are notified of the change
 
   Background:
     Given this new encounter that has not been saved
-      | Patient Id                           | Status name | Notes                |
-      | debbcd5e-98d4-11ed-a8fc-0242ac120002 | NEW         | Here are some notes. |
+      | Status name | Notes                | Patient Id                           |
+      | NEW         | Here are some notes. | debbcd5e-98d4-11ed-a8fc-0242ac120002 |
     And the encounter has these CPT codes
       | CPT code | Description                 |
       | 86931    | Frozen blood thaw           |
@@ -37,6 +37,7 @@ Feature: When an encounter is created or modified, we are notified of the change
   Scenario: Save a new encounter
     When the encounter is saved
     Then I am notified that a new encounter has been created
+    And the notification contains an exact copy of the encounter
     And all encounter outbox entries have been resolved
 
 
@@ -46,6 +47,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     When the encounter is saved
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
+    And all encounter outbox entries have been resolved
 
 
   Scenario: Update notes on existing encounter
@@ -54,6 +56,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     When the encounter is saved
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
+    And all encounter outbox entries have been resolved
 
 
   Scenario: Add DX code to encounter
@@ -62,6 +65,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
+    And all encounter outbox entries have been resolved
 
 
   Scenario: Add CPT code to encounter
@@ -70,6 +74,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
+    And all encounter outbox entries have been resolved
 
 
   Scenario: Remove DX code from encounter
@@ -78,6 +83,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
+    And all encounter outbox entries have been resolved
 
 
   Scenario: Remove CPT code from encounter
@@ -86,3 +92,4 @@ Feature: When an encounter is created or modified, we are notified of the change
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
+    And all encounter outbox entries have been resolved

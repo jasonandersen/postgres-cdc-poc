@@ -25,7 +25,7 @@ public class EncounterService {
      * How frequently we should be polling the encounters outbox to find data updates. Normally, we'd configure
      * this as part of application.properties but that isn't compatible with the @Scheduled annotation.
      */
-    private static final int OUTBOX_POLLING_FREQUENCY = 2500;
+    private static final int OUTBOX_POLLING_FREQUENCY = 1000;
     
     private final EncounterDao encounterDao;
     private final EncounterOutboxEntryDao outboxEntryDao;
@@ -41,7 +41,10 @@ public class EncounterService {
     }
     
     public Encounter saveEncounter(Encounter encounter) {
-        return encounterDao.save(encounter);
+        Encounter saved = encounterDao.save(encounter);
+        encounterDao.findById(saved.getId());
+        // We need to reload the entity to get the timestamps set by the database trigger
+        return encounterDao.findById(saved.getId()).orElseThrow(IllegalArgumentException::new);
     }
     
     /**
@@ -51,19 +54,9 @@ public class EncounterService {
     @Scheduled(fixedRate = OUTBOX_POLLING_FREQUENCY)
     public void pollEncounterOutbox() {
         log.debug("Polling encounters outbox");
-        EncounterOutboxBatch batch = new EncounterOutboxBatch(encounterDao, outboxEntryDao);
+        EncounterOutboxBatch batch = new EncounterOutboxBatch(encounterDao, outboxEntryDao, eventPublisher);
         if (batch.entriesArePresent()) {
-            log.debug("{} outbox entries discovered", batch.numberOfEntries());
-            
-            // We need to make sure that resolving the outbox entries in the database and publishing events
-            // are both considered to be part of the same atomic transaction. They MUST succeed or fail together.
-            // Worst possible scenario is that the database is updated but events don't get published. That will
-            // put our system in an incorrect state.
-            
-            // ***** OPEN TRANSACTION BOUNDARY *****
-            batch.resolveOutboxEntries();
-            eventPublisher.publish(batch.getEvents());
-            // ***** CLOSE TRANSACTION BOUNDARY *****
+            batch.commit();
         }
     }
     
