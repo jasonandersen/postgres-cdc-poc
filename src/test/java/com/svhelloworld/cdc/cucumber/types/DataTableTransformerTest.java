@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
- * Testing the functionality of the {@link InputTransformer} class.
+ * Testing the functionality of the {@link DataTableTransformer} class.
  */
-public class InputTransformerTest {
+public class DataTableTransformerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(InputTransformerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(DataTableTransformerTest.class);
     private static final double DELTA = 0.001;
 
-    private final InputTransformer transformer = new InputTransformer();
+    private final DataTableTransformer transformer = new DataTableTransformer();
 
     @Test
     public void convertPercentageToNumeric() {

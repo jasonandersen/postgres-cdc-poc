@@ -15,12 +15,12 @@ import java.util.regex.Pattern;
 /**
  * Transforms Cucumber's {@link DataTable} objects or {@link Map}s derived from data tables into Java beans.
  *
- * @see InputTransformerTest
+ * @see DataTableTransformerTest
  */
 @Component
-public class InputTransformer {
+public class DataTableTransformer {
 
-    private static final Logger log = LoggerFactory.getLogger(InputTransformer.class);
+    private static final Logger log = LoggerFactory.getLogger(DataTableTransformer.class);
     /**
      * Regular expression pattern that will check for white space in the interior of a string.
      */

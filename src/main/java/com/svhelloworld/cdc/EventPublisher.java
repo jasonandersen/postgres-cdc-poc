@@ -28,7 +28,7 @@ public class EventPublisher {
         events.forEach(consumer::handleEvent);
     }
     
-    public void publish(Event event) {
+    public void publish(Event<Encounter> event) {
         log.debug("Publishing event");
         consumer.handleEvent(event);
     }

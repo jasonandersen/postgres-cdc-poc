@@ -8,18 +8,19 @@ import com.svhelloworld.cdc.encounters.model.Encounter;
 import com.svhelloworld.cdc.encounters.model.EncounterOutboxEntry;
 import com.svhelloworld.cdc.encounters.model.EncounterStatus;
 import com.svhelloworld.cdc.encounters.model.ProcedureCode;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Glue code to execute steps defined in the Cucumber feature files.
@@ -31,25 +32,41 @@ public class EncounterNotificationSteps {
     
     private final EncounterService encounterService;
     private final EncounterEventsConsumer eventsConsumer;
+    /**
+     * The entity that the scenarios perform CRUD operations against.
+     */
     private Encounter targetEncounter;
+    /**
+     * The entity that comes back from the event notification of CRUD events.
+     */
+    private Encounter encounterFromEvent;
     
+    /**
+     * Cucumber step definition classes are Spring managed beans with their own special life-cycle scope. All
+     * dependencies are injected via Spring's application context.
+     */
     public EncounterNotificationSteps(
             EncounterService encounterService,
             EncounterEventsConsumer eventsConsumer) {
         
-        // Note - Cucumber step definition classes are Spring managed beans so Spring will handle
-        // injection of dependencies
         this.encounterService = encounterService;
         this.eventsConsumer = eventsConsumer;
-        log.info("Change data capture step definitions instantiated.");
+        log.debug("Change data capture step definitions instantiated.");
     }
     
     /**
      * Events can persist between test scenarios, so we need to clean them up before each one.
      */
-    @BeforeEach
-    public void clearEvents() {
+    @Before
+    public void setupScenario(Scenario scenario) {
+        log.info("Test scenario: [{}] START", scenario.getName());
+        log.debug("Clearing {} events prior to executing test scenario", eventsConsumer.numberEventsReceived());
         eventsConsumer.clearEvents();
+    }
+    
+    @After
+    public void teardownScenario(Scenario scenario) {
+        log.info("Test scenario: [{}] {}", scenario.getName(), scenario.getStatus());
     }
     
     /*
@@ -107,6 +124,7 @@ public class EncounterNotificationSteps {
     
     @When("the encounter is saved( again)")
     public void theEncounterIsSaved() {
+        log.debug("Saving the target encounter");
         targetEncounter = encounterService.saveEncounter(targetEncounter);
     }
     
@@ -119,6 +137,7 @@ public class EncounterNotificationSteps {
         int startingEventCount = eventsConsumer.numberEventsReceived();
         waitForEvent();
         assertEquals(startingEventCount + 1, eventsConsumer.numberEventsReceived());
+        encounterFromEvent = mostRecentEventPayload();
     }
     
     @Then("I am notified that an existing encounter has been updated")
@@ -134,10 +153,38 @@ public class EncounterNotificationSteps {
     
     @Then("the notification contains an exact copy of the encounter")
     public void theNotificationContainsAnExactCopyOfTheEncounter() {
-        Encounter receivedEncounter = mostRecentEventPayload();
-        assertEquals(targetEncounter, receivedEncounter);
+        assertEquals(targetEncounter, encounterFromEvent);
     }
     
+    @Then("the encounter in the notification contains the diagnosis code {diagnosisCode}")
+    public void theEncounterInTheNotificationContainsTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
+        assertTrue(encounterFromEvent.getDiagnosisCodes().contains(diagnosisCode));
+    }
+    
+    @Then("the encounter in the notification contains the procedure code {procedureCode}")
+    public void theEncounterInTheNotificationContainsTheProcedureCode(ProcedureCode procedureCode) {
+        assertTrue(encounterFromEvent.getProcedureCodes().contains(procedureCode));
+    }
+    
+    @Then("the encounter in the notification does not contain the diagnosis code {diagnosisCode}")
+    public void theEncounterInTheNotificationDoesNotContainTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
+        assertFalse(encounterFromEvent.getDiagnosisCodes().contains(diagnosisCode));
+    }
+    
+    @Then("the encounter in the notification does not contain the procedure code {procedureCode}")
+    public void theEncounterInTheNotificationDoesNotContainTheProcedureCode(ProcedureCode procedureCode) {
+        assertFalse(encounterFromEvent.getProcedureCodes().contains(procedureCode));
+    }
+    
+    @Then("the notes of the encounter in the notification is {string}")
+    public void theNotesOfTheEncounterInTheNotificationIs(String notes) {
+        assertEquals(notes, encounterFromEvent.getNotes());
+    }
+    
+    @Then("the status of the encounter in the notification is {encounterStatus}")
+    public void theStatusOfTheEncounterInTheNotificationIs(EncounterStatus encounterStatus) {
+        assertEquals(encounterStatus, encounterFromEvent.getStatus());
+    }
     
     /**
      * Wait for a specified amount of time for an event to show up from the event bus. Will return once an event is
@@ -158,7 +205,7 @@ public class EncounterNotificationSteps {
      * Fetch the most recent event and grab the encounter out of the event payload
      */
     private Encounter mostRecentEventPayload() {
-        Optional<Event> event = eventsConsumer.mostRecentEvent();
+        Optional<Event<Encounter>> event = eventsConsumer.mostRecentEvent();
         return (Encounter) event
                 .orElseThrow(IllegalArgumentException::new)
                 .getBody();

@@ -1,6 +1,7 @@
 package com.svhelloworld.cdc.encounters;
 
 import com.svhelloworld.cdc.Event;
+import com.svhelloworld.cdc.encounters.model.Encounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,18 +17,18 @@ import java.util.Optional;
 public class EncounterEventsConsumer {
     private static final Logger log = LoggerFactory.getLogger(EncounterEventsConsumer.class);
     
-    private final List<Event> eventsReceived;
+    private final List<Event<Encounter>> eventsReceived;
     
     public EncounterEventsConsumer() {
         eventsReceived = new ArrayList<>();
     }
     
-    public void handleEvent(Event event) {
+    public void handleEvent(Event<Encounter> event) {
         eventsReceived.add(event);
         log.debug("Event received: {}", event);
     }
     
-    public List<Event> getEventsReceived() {
+    public List<Event<Encounter>> getEventsReceived() {
         return eventsReceived;
     }
     
@@ -46,7 +47,7 @@ public class EncounterEventsConsumer {
      * The most recent event received
      * @return an Optional wrapper around an event
      */
-    public Optional<Event> mostRecentEvent() {
+    public Optional<Event<Encounter>> mostRecentEvent() {
         if (eventsReceived.isEmpty()) {
             return Optional.empty();
         }
