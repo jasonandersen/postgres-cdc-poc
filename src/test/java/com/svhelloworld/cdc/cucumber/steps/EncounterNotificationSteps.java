@@ -88,7 +88,7 @@ public class EncounterNotificationSteps {
         icdCodes.forEach(c -> targetEncounter.addDiagnosis(c));
     }
     
-    @Given("the encounter status is set to {encounterStatus}")
+    @Given("the encounter status is set to [{encounterStatus}]")
     public void theEncounterStatusIsChangedTo(EncounterStatus status) {
         targetEncounter.setStatus(status);
     }
@@ -98,22 +98,22 @@ public class EncounterNotificationSteps {
         targetEncounter.setNotes(notes);
     }
     
-    @Given("the diagnosis code {diagnosisCode} is added to the encounter")
+    @Given("the diagnosis code [{diagnosisCode}] is added to the encounter")
     public void theDiagnosisCodeIsAddedToTheEncounter(DiagnosisCode diagnosisCode) {
         targetEncounter.addDiagnosis(diagnosisCode);
     }
     
-    @Given("the procedure code {procedureCode} is added to the encounter")
+    @Given("the procedure code [{procedureCode}] is added to the encounter")
     public void theProcedureCodeIsAddedToTheEncounter(ProcedureCode procedureCode) {
         targetEncounter.addProcedure(procedureCode);
     }
     
-    @Given("the diagnosis code {diagnosisCode} is removed from the encounter")
+    @Given("the diagnosis code [{diagnosisCode}] is removed from the encounter")
     public void theDiagnosisCodeAIsRemovedFromTheEncounter(DiagnosisCode diagnosisCode) {
         targetEncounter.removeDiagnosis(diagnosisCode);
     }
     
-    @Given("the procedure code {procedureCode} is removed from the encounter")
+    @Given("the procedure code [{procedureCode}] is removed from the encounter")
     public void theProcedureCodeIsRemovedFromTheEncounter(ProcedureCode procedureCode) {
         targetEncounter.removeProcedure(procedureCode);
     }
@@ -156,22 +156,22 @@ public class EncounterNotificationSteps {
         assertEquals(targetEncounter, encounterFromEvent);
     }
     
-    @Then("the encounter in the notification contains the diagnosis code {diagnosisCode}")
+    @Then("the encounter in the notification contains the diagnosis code [{diagnosisCode}]")
     public void theEncounterInTheNotificationContainsTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
         assertTrue(encounterFromEvent.getDiagnosisCodes().contains(diagnosisCode));
     }
     
-    @Then("the encounter in the notification contains the procedure code {procedureCode}")
+    @Then("the encounter in the notification contains the procedure code [{procedureCode}]")
     public void theEncounterInTheNotificationContainsTheProcedureCode(ProcedureCode procedureCode) {
         assertTrue(encounterFromEvent.getProcedureCodes().contains(procedureCode));
     }
     
-    @Then("the encounter in the notification does not contain the diagnosis code {diagnosisCode}")
+    @Then("the encounter in the notification does not contain the diagnosis code [{diagnosisCode}]")
     public void theEncounterInTheNotificationDoesNotContainTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
         assertFalse(encounterFromEvent.getDiagnosisCodes().contains(diagnosisCode));
     }
     
-    @Then("the encounter in the notification does not contain the procedure code {procedureCode}")
+    @Then("the encounter in the notification does not contain the procedure code [{procedureCode}]")
     public void theEncounterInTheNotificationDoesNotContainTheProcedureCode(ProcedureCode procedureCode) {
         assertFalse(encounterFromEvent.getProcedureCodes().contains(procedureCode));
     }
@@ -181,7 +181,7 @@ public class EncounterNotificationSteps {
         assertEquals(notes, encounterFromEvent.getNotes());
     }
     
-    @Then("the status of the encounter in the notification is {encounterStatus}")
+    @Then("the status of the encounter in the notification is [{encounterStatus}]")
     public void theStatusOfTheEncounterInTheNotificationIs(EncounterStatus encounterStatus) {
         assertEquals(encounterStatus, encounterFromEvent.getStatus());
     }

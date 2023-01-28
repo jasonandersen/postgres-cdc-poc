@@ -43,11 +43,11 @@ Feature: When an encounter is created or modified, we are notified of the change
 
   Scenario: Update existing encounter with a new status
     Given the encounter is saved
-    And the encounter status is set to IN_PROGRESS
+    And the encounter status is set to [IN_PROGRESS]
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
-    And the status of the encounter in the notification is IN_PROGRESS
+    And the status of the encounter in the notification is [IN_PROGRESS]
     And all encounter outbox entries have been resolved
 
 
@@ -63,39 +63,39 @@ Feature: When an encounter is created or modified, we are notified of the change
 
   Scenario: Add DX code to encounter
     Given the encounter is saved
-    And the diagnosis code A36.0 is added to the encounter
+    And the diagnosis code [A36.0] is added to the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
-    And the encounter in the notification contains the diagnosis code A36.0
+    And the encounter in the notification contains the diagnosis code [A36.0]
     And all encounter outbox entries have been resolved
 
 
   Scenario: Add CPT code to encounter
     Given the encounter is saved
-    And the procedure code 86932 is added to the encounter
+    And the procedure code [86932] is added to the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
-    And the encounter in the notification contains the procedure code 86932
+    And the encounter in the notification contains the procedure code [86932]
     And all encounter outbox entries have been resolved
 
 
   Scenario: Remove DX code from encounter
     Given the encounter is saved
-    And the diagnosis code A36.3 is removed from the encounter
+    And the diagnosis code [A36.3] is removed from the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
-    And the encounter in the notification does not contain the diagnosis code A36.3
+    And the encounter in the notification does not contain the diagnosis code [A36.3]
     And all encounter outbox entries have been resolved
 
 
   Scenario: Remove CPT code from encounter
     Given the encounter is saved
-    And the procedure code 86960 is removed from the encounter
+    And the procedure code [86960] is removed from the encounter
     When the encounter is saved again
     Then I am notified that an existing encounter has been updated
     And the notification contains an exact copy of the encounter
-    And the encounter in the notification does not contain the procedure code 86960
+    And the encounter in the notification does not contain the procedure code [86960]
     And all encounter outbox entries have been resolved
