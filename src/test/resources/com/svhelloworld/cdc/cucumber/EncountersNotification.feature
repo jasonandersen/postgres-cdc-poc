@@ -103,3 +103,15 @@ Feature: When an encounter is created or modified, we are notified of the change
     Then I am notified that an existing encounter has been updated
     And the notification contains a matching copy of the encounter
     And the encounter in the notification does not contain the procedure code [86960]
+
+  Scenario: Remove multiple CPT codes from encounter
+    Given the encounter is saved
+    And the procedure code [86960] is removed from the encounter
+    And the procedure code [86985] is removed from the encounter
+    When the encounter is saved again
+    Then I am notified that an existing encounter has been updated
+    And the notification contains a matching copy of the encounter
+    And the encounter in the notification does not contain the procedure code [86960]
+    And the encounter in the notification does not contain the procedure code [86985]
+    And the encounter in the notification contains the procedure code [86931]
+
