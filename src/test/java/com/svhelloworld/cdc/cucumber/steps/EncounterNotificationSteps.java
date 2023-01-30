@@ -17,7 +17,10 @@ import io.cucumber.java.en.When;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EncounterNotificationSteps {
     
     private static final Logger log = LoggerFactory.getLogger(EncounterNotificationSteps.class);
-    private static final int EVENT_WAIT_TIME = 10000;
+    /**
+     * How long will we wait for an event to show up after changing data (in milliseconds).
+     */
+    private static final int EVENT_WAIT_TIME = 5000;
     
     private final EncounterService encounterService;
     private final EncounterEventsConsumer eventsConsumer;
@@ -180,15 +186,16 @@ public class EncounterNotificationSteps {
      * received or the specified EVENT_WAIT_TIME has passed.
      * @throws IllegalArgumentException when no event is caught
      */
-    @SuppressWarnings("BusyWait")
     private Event<Encounter> fetchNotificationEvent() throws InterruptedException {
         event = null;
-        long startTime = System.currentTimeMillis();
+        Instant start = Instant.now();
         int startingEventCount = eventsConsumer.numberEventsReceived();
-        while (System.currentTimeMillis() - startTime < EVENT_WAIT_TIME &&
+        // wait until an event shows up or the max wait time
+        while (Duration.between(start, Instant.now()).toMillis() < EVENT_WAIT_TIME &&
                 eventsConsumer.numberEventsReceived() == startingEventCount) {
-            Thread.sleep(200);
+            TimeUnit.MILLISECONDS.sleep(200);
         }
+        // if an event showed up, return it
         if (startingEventCount < eventsConsumer.numberEventsReceived()) {
             return eventsConsumer.mostRecentEvent().orElseThrow(IllegalArgumentException::new);
         } else {

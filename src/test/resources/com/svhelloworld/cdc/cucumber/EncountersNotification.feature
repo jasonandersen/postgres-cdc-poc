@@ -104,6 +104,7 @@ Feature: When an encounter is created or modified, we are notified of the change
     And the notification contains a matching copy of the encounter
     And the encounter in the notification does not contain the procedure code [86960]
 
+
   Scenario: Remove multiple CPT codes from encounter
     Given the encounter is saved
     And the procedure code [86960] is removed from the encounter

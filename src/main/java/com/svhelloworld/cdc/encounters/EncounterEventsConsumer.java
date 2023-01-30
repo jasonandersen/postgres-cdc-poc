@@ -28,10 +28,6 @@ public class EncounterEventsConsumer {
         log.debug("Event received: {}", event);
     }
     
-    public List<Event<Encounter>> getEventsReceived() {
-        return eventsReceived;
-    }
-    
     public Integer numberEventsReceived() {
         return eventsReceived.size();
     }
@@ -44,8 +40,7 @@ public class EncounterEventsConsumer {
     }
     
     /**
-     * The most recent event received
-     * @return an Optional wrapper around an event
+     * The most recent event received.
      */
     public Optional<Event<Encounter>> mostRecentEvent() {
         if (eventsReceived.isEmpty()) {
