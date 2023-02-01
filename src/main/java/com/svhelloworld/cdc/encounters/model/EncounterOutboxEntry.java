@@ -18,6 +18,15 @@ import java.util.UUID;
 @Table(name = "encounters_outbox")
 public class EncounterOutboxEntry {
     
+    public static EncounterOutboxEntry fromEncounterId(long encounterId) {
+        EncounterOutboxEntry entry = new EncounterOutboxEntry();
+        entry.setEventId(UUID.randomUUID());
+        entry.setEncounterId(encounterId);
+        entry.setStatus(OutboxStatus.UNRESOLVED);
+        entry.setCreatedOn(Instant.now());
+        return entry;
+    }
+    
     @Id
     @Column(name = "event_id")
     private UUID eventId;

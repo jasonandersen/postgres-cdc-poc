@@ -37,7 +37,17 @@ public class DataTableTransformer {
      * Regular expression pattern that will determine if a value is numeric with thousands separators.
      */
     private static final Pattern thousandsSeparatorPattern = Pattern.compile("^[\\d,.]+$");
-
+    
+    /**
+     * Transforms a Cucumber data table into a bean.
+     * @param dataTable - Cucumber built data table
+     * @param targetClass - the class to transform the bean into
+     * @return a populated instance of the Java bean
+     */
+    public <T> T transformToBean(DataTable dataTable, Class<T> targetClass) {
+        return transformToBean(dataTable.asMap(), targetClass);
+    }
+    
     /**
      * Transforms a {@link Map} of string keys and values into a bean.
      * @param rawProperties - map of property values keyed by name
@@ -104,16 +114,16 @@ public class DataTableTransformer {
         if (isPercentage(convertedValue)) {
             convertedValue = convertedValue.replace("%", "");
         }
-        if (isNumericWithThousandsSeperators(convertedValue)) {
+        if (isNumericWithThousandsSeparators(convertedValue)) {
             convertedValue = convertedValue.replace(",", "");
         }
         return convertedValue;
     }
 
     /**
-     * @return true if the value is a numeric with thousands seperators
+     * @return true if the value is a numeric with thousands separators
      */
-    private boolean isNumericWithThousandsSeperators(String value) {
+    private boolean isNumericWithThousandsSeparators(String value) {
         return thousandsSeparatorPattern.matcher(value).matches();
     }
 

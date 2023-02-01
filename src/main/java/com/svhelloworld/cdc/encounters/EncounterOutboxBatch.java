@@ -38,8 +38,8 @@ public class EncounterOutboxBatch {
         
         this.encounterDao = encounterDao;
         this.outboxEntryDao = outboxEntryDao;
-        this.entries = outboxEntryDao.findByStatus(OutboxStatus.UNRESOLVED);
         this.eventPublisher = eventPublisher;
+        this.entries = outboxEntryDao.findByStatus(OutboxStatus.UNRESOLVED);
         this.entriesById = entriesById();
         if (entriesArePresent()) {
             log.debug("{} encounter mutations discovered.", entriesById.size());

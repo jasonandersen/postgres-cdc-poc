@@ -12,9 +12,11 @@ import java.util.Map;
 /**
  * This class gives us a place to consolidate Cucumber test parameter type conversions. This allows us to pass in
  * fully populated POJOs into step definition methods so the conversion doesn't have to be done within the test itself.
+ * This keeps step definition classes clean, readable and focused on the behavior of the application.
  */
 public class TypeConversion {
     
+    private static final String DESCRIPTION = "Test Code";
     private final DataTableTransformer dataTableTransformer;
     
     public TypeConversion(DataTableTransformer dataTableTransformer) {
@@ -46,18 +48,12 @@ public class TypeConversion {
     
     @ParameterType(".*")
     public ProcedureCode procedureCode(String input) {
-        ProcedureCode out = new ProcedureCode();
-        out.setCptCode(input);
-        out.setDescription("Test Procedure Code");
-        return out;
+        return ProcedureCode.from(input, DESCRIPTION);
     }
     
     @ParameterType(".*")
     public DiagnosisCode diagnosisCode(String input) {
-        DiagnosisCode out = new DiagnosisCode();
-        out.setIcdCode(input);
-        out.setDescription("Test Diagnosis Code");
-        return out;
+        return DiagnosisCode.from(input, DESCRIPTION);
     }
     
 }

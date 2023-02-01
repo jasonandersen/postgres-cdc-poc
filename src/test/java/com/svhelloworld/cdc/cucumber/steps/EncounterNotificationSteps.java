@@ -153,22 +153,34 @@ public class EncounterNotificationSteps {
     
     @Then("the encounter in the notification contains the diagnosis code [{diagnosisCode}]")
     public void theEncounterInTheNotificationContainsTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
-        assertTrue(event.getBody().getDiagnosisCodes().contains(diagnosisCode));
+        assertTrue(event
+                .getBody()
+                .getDiagnosisCodes()
+                .contains(diagnosisCode));
     }
     
     @Then("the encounter in the notification contains the procedure code [{procedureCode}]")
     public void theEncounterInTheNotificationContainsTheProcedureCode(ProcedureCode procedureCode) {
-        assertTrue(event.getBody().getProcedureCodes().contains(procedureCode));
+        assertTrue(event
+                .getBody()
+                .getProcedureCodes()
+                .contains(procedureCode));
     }
     
     @Then("the encounter in the notification does not contain the diagnosis code [{diagnosisCode}]")
     public void theEncounterInTheNotificationDoesNotContainTheDiagnosisCodeA(DiagnosisCode diagnosisCode) {
-        assertFalse(event.getBody().getDiagnosisCodes().contains(diagnosisCode));
+        assertFalse(event
+                .getBody()
+                .getDiagnosisCodes()
+                .contains(diagnosisCode));
     }
     
     @Then("the encounter in the notification does not contain the procedure code [{procedureCode}]")
     public void theEncounterInTheNotificationDoesNotContainTheProcedureCode(ProcedureCode procedureCode) {
-        assertFalse(event.getBody().getProcedureCodes().contains(procedureCode));
+        assertFalse(event
+                .getBody()
+                .getProcedureCodes()
+                .contains(procedureCode));
     }
     
     @Then("the notes of the encounter in the notification is {string}")
@@ -197,7 +209,9 @@ public class EncounterNotificationSteps {
         }
         // if an event showed up, return it
         if (startingEventCount < eventsConsumer.numberEventsReceived()) {
-            return eventsConsumer.mostRecentEvent().orElseThrow(IllegalArgumentException::new);
+            return eventsConsumer
+                    .mostRecentEvent()
+                    .orElseThrow(IllegalArgumentException::new);
         } else {
             throw new IllegalArgumentException("Event was never received.");
         }

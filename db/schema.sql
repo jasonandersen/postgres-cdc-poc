@@ -75,6 +75,8 @@ CREATE TABLE IF NOT EXISTS outbox_status
     description      VARCHAR(255) NOT NULL
 );
 
+-- Note: a constraint on encounter_id ensures that we cannot write to the encounters_outbox when we delete
+-- a row from the encounter table. This schema design is predicated on soft deletes only.
 CREATE TABLE IF NOT EXISTS encounters_outbox
 (
     event_id         UUID      DEFAULT uuid_generate_v1() PRIMARY KEY,

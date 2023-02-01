@@ -49,8 +49,7 @@ public class ProcedureCode {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProcedureCode)) return false;
-        ProcedureCode that = (ProcedureCode) o;
+        if (!(o instanceof ProcedureCode that)) return false;
         return getCptCode().equals(that.getCptCode());
     }
     
