@@ -1,0 +1,21 @@
+# Use postgres/example user/password credentials
+# Add these credentials to a local application-local.properties file
+version: '3.8'
+services:
+  db:
+    image: postgres:12.9
+    restart: always
+    environment:
+      POSTGRES_USER: cdc
+      POSTGRES_PASSWORD: cdcpoc
+      POSTGRES_DB: cdc-poc
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/postgres-data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
