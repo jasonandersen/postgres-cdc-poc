@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.svhelloworld</groupId>
-    <artifactId>postgres-cdc</artifactId>
+    <artifactId>cdc-outbox-simple</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>postgres-cdc</name>
     <description>Proof of concept to apply CDC pattern to a postgres database</description>
